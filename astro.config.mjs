@@ -3,7 +3,6 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
-import cloudflare from '@astrojs/cloudflare';
 import { readdirSync, readFileSync } from 'node:fs';
 import { parse } from 'yaml';
 
@@ -36,8 +35,7 @@ const draftStaticPaths = ['/privacy/', '/cookie-policy/', '/terms/', '/refund-po
 
 export default defineConfig({
   site: 'https://daybytes.com',
-  output: 'server',
-  adapter: cloudflare(),
+  output: 'static',
   trailingSlash: 'ignore',
   integrations: [
     react(),

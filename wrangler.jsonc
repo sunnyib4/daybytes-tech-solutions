@@ -1,0 +1,44 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "daybytes-tech-solutions",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-10-13",
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "www.daybytes.com/*",
+      "zone_name": "daybytes.com"
+    }
+  ],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*",
+      "/robots.txt",
+      "/2026/*",
+      "/about-us*",
+      "/contact-us*",
+      "/home",
+      "/index.php",
+      "/blog/page/*",
+      "/category/*",
+      "/author/*",
+      "/tag/*",
+      "/feed*",
+      "/comments/feed/",
+      "/wp-login.php",
+      "/wp-admin/*"
+    ]
+  },
+  "ratelimits": [
+    {
+      "name": "FORM_RATE_LIMITER",
+      "namespace_id": "2026101601",
+      "simple": {
+        "limit": 5,
+        "period": 60
+      }
+    }
+  ]
+}

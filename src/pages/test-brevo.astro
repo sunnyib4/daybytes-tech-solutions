@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import AjaxForm from '@/components/forms/AjaxForm.astro';
+import Field from '@/components/forms/Field.astro';
 ---
 
 <BaseLayout title="Brevo test form" description="Internal test form for verifying transactional email delivery." noindex overlayHeader>
@@ -7,23 +9,13 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     <div class="rounded-2xl border border-line bg-surface/80 p-8 shadow-sm">
       <p class="label-mono mb-3 text-xs uppercase tracking-[0.18em] text-subtle">Developer test</p>
       <h1 class="mt-0 text-3xl font-medium tracking-[-0.04em] text-ink">Brevo delivery test</h1>
-      <p class="mt-4 text-base text-body">
-        This form posts directly to the secure Brevo route so you can validate email delivery using a minimal payload.
-      </p>
-
-      <form action="/api/contact" method="POST" class="mt-8 space-y-5">
-        <div>
-          <label for="name" class="mb-2 block text-sm font-medium text-ink">First name</label>
-          <input id="name" name="name" type="text" required class="w-full rounded-xl border border-line bg-canvas px-3 py-3 text-base text-ink outline-none transition focus:border-accent" placeholder="Jane" />
-        </div>
-
-        <div>
-          <label for="email" class="mb-2 block text-sm font-medium text-ink">Email</label>
-          <input id="email" name="email" type="email" required class="w-full rounded-xl border border-line bg-canvas px-3 py-3 text-base text-ink outline-none transition focus:border-accent" placeholder="Enter your email address" />
-        </div>
-
-        <button type="submit" class="btn-accent w-full justify-center px-6 py-4 text-base">Send test email</button>
-      </form>
+      <p class="mt-4 text-base text-body">Internal test page for verifying the configured Worker mail provider.</p>
+      <AjaxForm id="mail-test-form" form="contact" subject="Daybytes mail test" submitLabel="Send test email" success="Test message sent.">
+        <Field id="name" label="Your name" required error="Please enter your name." />
+        <Field id="email" label="Your email" type="email" required error="Please enter a valid email address." />
+        <Field id="service" label="Service" type="select" required placeholderOption="Choose a service" options={[{ value: 'test', label: 'Mail delivery test' }]} error="Please choose a service." />
+        <Field id="message" label="Test message" type="textarea" required wide error="Please enter a test message." />
+      </AjaxForm>
     </div>
   </section>
 </BaseLayout>

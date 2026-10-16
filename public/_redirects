@@ -1,5 +1,5 @@
-# Old WordPress URLs -> new pages (Cloudflare Pages, 301 permanent).
-# /about and /contact keep the same path on the new site, so they need no rule.
+# Old WordPress URLs -> new pages (Workers Static Assets, 301 permanent).
+# www.daybytes.com is redirected by the Worker because this file cannot match hostnames.
 
 /2026/03/01/the-best-business-laptops-for-2026                         /blog/the-best-business-laptops-for-2026                         301
 /2026/03/01/the-best-business-laptops-for-2026/                        /blog/the-best-business-laptops-for-2026                         301

@@ -50,6 +50,9 @@ const action = site.forms[form];
       </span>
     </label>
   </div>
+  <div data-turnstile class="sm:col-span-2" aria-label="Security verification"></div>
+  <input type="hidden" name="started_at" />
+  <input type="hidden" name="started_proof" />
   <div class="flex flex-wrap items-center gap-4 sm:col-span-2">
     <button type="submit" class="btn-accent cursor-pointer border-0 px-7 py-4 font-sans text-base disabled:cursor-wait disabled:opacity-70">
       {submitLabel}

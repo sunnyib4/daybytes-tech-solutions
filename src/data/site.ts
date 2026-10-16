@@ -15,9 +15,9 @@ export const site = {
   // Public form endpoints for the static site. The server route reads the actual Brevo
   // credentials from environment variables and does not expose them to the browser.
   forms: {
-    contact: '/api/contact',
-    training: '/api/training',
-    careers: '/api/careers',
+    contact: '/api/submit',
+    training: '/api/submit',
+    careers: '/api/submit',
   },
   address: {
     street: 'Lagos',
