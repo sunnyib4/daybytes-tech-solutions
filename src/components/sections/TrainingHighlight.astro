@@ -1,0 +1,44 @@
+---
+import { getPrograms } from '@/lib/content';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+
+const programs = await getPrograms();
+const featured = programs.filter((p) => p.data.featured).slice(0, 4);
+---
+
+<section aria-labelledby="training-title" class="px-4 py-20 sm:px-6">
+  <div class="mx-auto grid max-w-[1100px] items-center gap-10 overflow-hidden rounded-[28px] bg-[#1A1714] p-7 text-[#F4F3F1] sm:p-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:p-14 dark:bg-surface dark:ring-1 dark:ring-line">
+    <div>
+      <p class="label-mono m-0 mb-3 text-accent">Smart Learning Solutions</p>
+      <SectionHeading id="training-title" class="text-[#F4F3F1] sm:text-[40px]">Learn the skills your work runs on</SectionHeading>
+      <p class="mt-5 mb-7 text-lg leading-relaxed text-[#D6D0C9]">
+        {programs.length} practical programs for individuals and teams, covering web development, AI automations, virtual assistance, IT support and everyday productivity tools.
+      </p>
+      <div class="flex flex-wrap gap-3.5">
+        <a href="/training" class="btn-accent px-6 py-3.5">Explore all programs</a>
+        <a href="/training/apply" class="btn border-[1.5px] border-[#F4F3F1] px-6 py-3.5 font-normal text-[#F4F3F1] hover:bg-[#F4F3F1] hover:text-[#1A1714]">Apply now</a>
+      </div>
+    </div>
+    <ul data-reveal-stagger class="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
+      {
+        featured.map((p) => (
+          <li>
+            <a
+              href={`/training/${p.id}`}
+              class="group flex h-full flex-col gap-3 rounded-[16px] border border-white/10 bg-white/[.04] p-5 text-[#F4F3F1] no-underline transition-[transform,background-color,border-color] duration-300 hover:-translate-y-1 hover:border-white/25 hover:bg-white/[.08]"
+            >
+              <span class="flex items-center justify-between gap-3">
+                <span aria-hidden="true" class="flex size-11 items-center justify-center rounded-[10px] bg-[#2A2622] font-mono text-sm text-accent">{p.data.code}</span>
+                <span class="font-mono text-[11px] tracking-[0.06em] text-[#B5ADA5] uppercase">{p.data.category}</span>
+              </span>
+              <span class="heading-serif text-lg leading-snug">{p.data.title}</span>
+              <span aria-hidden="true" class="mt-auto font-mono text-[13px] text-[#D6D0C9]">
+                View program <span class="arrow">→</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

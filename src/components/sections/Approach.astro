@@ -1,0 +1,35 @@
+---
+import { Image } from 'astro:assets';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { approach } from '@/data/site';
+import businessGrowthChart from '@/assets/projects/download.jpg';
+---
+
+<section aria-labelledby="approach-title" class="px-4 py-20 sm:px-6">
+  <div class="mx-auto flex max-w-[1100px] flex-wrap-reverse items-center gap-14">
+    <Image
+      data-reveal
+      src={businessGrowthChart}
+      alt="Business growth chart with rising performance metrics"
+      class="aspect-[3/2] min-w-0 flex-[1_1_420px] rounded-[18px] object-cover shadow-[0_20px_50px_rgba(0,0,0,.12)]"
+    />
+    <div class="min-w-0 flex-[1_1_420px]">
+      <SectionHeading id="approach-title" class="mb-6">Our approach</SectionHeading>
+      <ol data-reveal-stagger class="m-0 flex list-none flex-col gap-[22px] p-0">
+        {
+          approach.map((step, i) => (
+            <li class="flex gap-4">
+              <span aria-hidden="true" class="pt-1 font-mono text-sm text-accent-text">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div>
+                <h3 class="m-0 text-lg font-semibold">{step.title}</h3>
+                <p class="mt-1.5 mb-0 leading-relaxed text-muted">{step.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>

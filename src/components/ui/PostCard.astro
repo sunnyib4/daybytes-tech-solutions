@@ -1,0 +1,21 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import { formatDate } from '@/lib/content';
+
+interface Props { post: CollectionEntry<'blog'>; headingLevel?: 'h2' | 'h3' }
+const { post, headingLevel: Heading = 'h3' } = Astro.props;
+const { title, pubDate, category, image, imageAlt } = post.data;
+---
+
+<article class="group relative overflow-hidden rounded-[14px] border border-line bg-surface transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-[0_18px_40px_rgba(0,0,0,.1)]">
+  <Image src={image} alt={imageAlt} widths={[400, 700]} sizes="(min-width: 768px) 540px, 100vw" class="aspect-[2/1] w-full object-cover" />
+  <div class="p-5">
+    <p class="m-0 mb-1.5 font-mono text-xs text-subtle">
+      <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time> · {category}
+    </p>
+    <Heading class="heading-serif m-0 text-[21px] leading-snug">
+      <a href={`/blog/${post.id}`} class="no-underline after:absolute after:inset-0 group-hover:underline group-hover:underline-offset-4">{title}</a>
+    </Heading>
+  </div>
+</article>

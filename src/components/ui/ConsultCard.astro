@@ -1,0 +1,31 @@
+---
+// Dark "Speak with an expert" card. Sends the chosen service to /contact,
+// where the full request form picks it up.
+import { site } from '@/data/site';
+import { getServices } from '@/lib/content';
+
+interface Props { selected?: string; class?: string; idPrefix?: string; [key: `data-${string}`]: unknown }
+const { selected, class: className, idPrefix = 'consult', ...rest } = Astro.props;
+const services = await getServices();
+---
+
+<div {...rest} class:list={['rounded-[18px] bg-[#1A1714] p-7 text-[#F4F3F1] sm:p-9 dark:bg-surface dark:ring-1 dark:ring-line', className]}>
+  <h2 class="heading-serif m-0 mb-3.5 text-[32px]">Speak with an expert</h2>
+  <p class="m-0 mb-6 leading-relaxed text-[#D6D0C9]">
+    Review your challenges, uncover growth opportunities, and plan actionable next steps with flexible scheduling.
+  </p>
+  <ul class="m-0 mb-7 flex list-none flex-col gap-2.5 p-0 font-mono text-sm">
+    {site.hours.map((h) => <li>{h.label} · {h.value}</li>)}
+    <li><a href={site.phone.href} target="_blank" rel="noopener noreferrer" class="no-underline hover:underline">{site.phone.display}</a></li>
+    <li><a href={`mailto:${site.email}`} target="_blank" rel="noopener noreferrer" class="no-underline hover:underline">{site.email}</a></li>
+  </ul>
+  <form action="/contact" method="get" class="flex flex-col gap-3">
+    <label for={`${idPrefix}-service`} class="text-sm text-[#D6D0C9]">What do you need?</label>
+    <select id={`${idPrefix}-service`} name="service" class="rounded-[10px] border border-[#6B625A] bg-[#24201D] p-3.5 text-base text-[#F4F3F1]">
+      {services.map((s) => <option value={s.id} selected={s.id === selected}>{s.data.title}</option>)}
+      <option value="other">Other</option>
+    </select>
+    <button type="submit" class="btn-accent cursor-pointer border-0 p-4 font-sans text-base">Request a consultation</button>
+    <a href={site.calendly} target="_blank" rel="noopener noreferrer" class="text-center font-mono text-sm text-[#D6D0C9] underline-offset-4 hover:text-white">Or book a free call on Calendly <span class="arrow" aria-hidden="true">→</span></a>
+  </form>
+</div>

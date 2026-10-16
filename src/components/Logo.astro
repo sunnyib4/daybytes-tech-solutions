@@ -1,0 +1,27 @@
+---
+/**
+ * Daybytes brand mark (the "D" from daybytes.com), in a dark version for light
+ * backgrounds and a white version for dark ones. Swap the files in
+ * public/brand/ (or the paths below) when the full logo is available.
+ */
+interface Props {
+  size?: number;
+  /** auto: follows the site theme. onDark: always the white version (e.g. the footer). */
+  variant?: 'auto' | 'onDark';
+  class?: string;
+}
+const { size = 36, variant = 'auto', class: className } = Astro.props;
+const alt = 'Daybytes Tech Solutions';
+const dims = { width: size, height: size };
+---
+
+{
+  variant === 'onDark' ? (
+    <img src="/brand/daybytes-mark-white.svg" alt={alt} {...dims} class:list={['block shrink-0', className]} />
+  ) : (
+    <span class:list={['block shrink-0', className]}>
+      <img src="/brand/daybytes-mark.svg" alt={alt} {...dims} class="block size-full dark:hidden" />
+      <img src="/brand/daybytes-mark-white.svg" alt={alt} {...dims} class="hidden size-full dark:block" />
+    </span>
+  )
+}

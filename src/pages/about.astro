@@ -1,0 +1,150 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import LocalBusinessSchema from '@/components/LocalBusinessSchema.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import Stats from '@/components/sections/Stats.astro';
+import Approach from '@/components/sections/Approach.astro';
+import Testimonials from '@/components/sections/Testimonials.astro';
+import ConsultCard from '@/components/ui/ConsultCard.astro';
+import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
+import businessTechnologyIllustration from '@/assets/projects/vectorelements-lyKf9UWWrdg-unsplash.jpg';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { site } from '@/data/site';
+import { getServices, getTestimonials } from '@/lib/content';
+
+const [services, testimonials] = await Promise.all([getServices(), getTestimonials()]);
+const team = (await getCollection('team', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+
+const values = ['Professionalism', 'Reliability', 'Attention to detail', 'Transparency', 'Focused on results'];
+---
+
+<BaseLayout
+  title="About Us"
+  description="Daybytes Tech Solutions is a Lagos IT partner for businesses and individuals, delivering practical strategies that make technology work for you."
+  overlayHeader
+>
+  <LocalBusinessSchema slot="head" />
+  <PageHero
+    eyebrow="About Daybytes"
+    title="We create solutions that matter"
+    intro="A trusted partner for businesses and individuals. Experts delivering practical IT solutions that make technology work for your business, not against it."
+    breadcrumbs={[{ label: 'About', href: '/about' }]}
+  />
+
+  <section aria-labelledby="who-title" class="px-4 py-16 sm:px-6">
+    <div class="mx-auto flex max-w-[1100px] flex-wrap items-center gap-14">
+      <div class="min-w-0 flex-[1_1_420px]">
+        <SectionHeading id="who-title" class="mb-[18px]">Who we are</SectionHeading>
+        <p class="m-0 mb-[18px] text-lg leading-[1.65] text-body">
+          We work with organizations to{' '}
+          <span class="underline decoration-accent decoration-2 underline-offset-4">simplify complexity, improve operational efficiency</span>, and support lasting business
+          performance.
+        </p>
+        <p class="m-0 text-lg leading-[1.65] text-body">
+          Our approach combines strategic insight, technical expertise, and a commitment to excellence with practical, scalable solutions for startups, SMEs, individuals,
+          and larger businesses alike.
+        </p>
+      </div>
+      <Image
+        src={businessTechnologyIllustration}
+        alt="Illustration of people using connected business technology"
+        class="aspect-[3/2] min-w-0 flex-[1_1_420px] rounded-[18px] object-cover shadow-[0_20px_50px_rgba(0,0,0,.12)]"
+      />
+    </div>
+  </section>
+
+  <section aria-label="Mission and vision" class="px-4 py-10 sm:px-6">
+    <div data-reveal-stagger class="mx-auto grid max-w-[1100px] gap-4 md:grid-cols-2">
+      <div class="rounded-[14px] border border-line bg-surface p-7">
+        <h2 class="label-mono m-0 mb-3 text-accent-text">Our mission</h2>
+        <p class="heading-serif m-0 text-2xl leading-snug">To deliver innovative and reliable technology solutions that drive performance and sustainable growth.</p>
+      </div>
+      <div class="rounded-[14px] border border-line bg-surface p-7">
+        <h2 class="label-mono m-0 mb-3 text-accent-text">Our vision</h2>
+        <p class="heading-serif m-0 text-2xl leading-snug">To be a trusted technology partner known for excellence, innovation, and measurable impact.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="values-title" class="px-4 py-16 sm:px-6">
+    <div class="mx-auto max-w-[1100px]">
+      <SectionHeading id="values-title" class="mb-6">What we stand for</SectionHeading>
+      <ul data-reveal-stagger class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-6 p-0">
+        {
+          values.map((v, i) => (
+            <li class="border-t-[1.5px] border-ink pt-4">
+              <span aria-hidden="true" class="font-mono text-sm text-accent-text">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <p class="mt-2 mb-0 text-lg font-semibold">{v}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Stats />
+  <Approach />
+
+  {
+    team.length > 0 && (
+      <section aria-labelledby="team-title" class="px-4 py-20 sm:px-6">
+        <div class="mx-auto max-w-[1100px]">
+          <SectionHeading id="team-title" class="mb-8">Our team</SectionHeading>
+          <ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-6 p-0">
+            {team.map((member) => (
+              <li>
+                {member.data.photo ? (
+                  <Image src={member.data.photo} alt={`${member.data.name}, ${member.data.role}`} width={480} class="aspect-[4/5] w-full rounded-[14px] object-cover" />
+                ) : (
+                  <ImagePlaceholder label={member.data.name} class="aspect-[4/5]" />
+                )}
+                <p class="mt-4 mb-0 text-lg font-semibold">{member.data.name}</p>
+                <p class="mt-0.5 mb-0 text-sm text-subtle">{member.data.role}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section aria-labelledby="services-title" class="px-4 py-16 sm:px-6">
+    <div class="mx-auto max-w-[1100px]">
+      <SectionHeading id="services-title" class="mb-6">How we help</SectionHeading>
+      <ul data-reveal-stagger class="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          services.map((s) => (
+            <li>
+              <a
+                href={`/services/${s.id}`}
+                class="flex h-full items-center gap-4 rounded-[14px] border border-line bg-surface p-4 font-semibold text-ink no-underline hover:border-line-strong"
+              >
+                <span aria-hidden="true" class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-tile font-mono text-accent">{s.data.code}</span>
+                {s.data.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Testimonials testimonials={testimonials.slice(0, 3)} />
+
+  <section aria-label="Get in touch" class="px-4 pt-6 pb-24 sm:px-6">
+    <div class="mx-auto flex max-w-[1100px] flex-wrap items-center gap-10">
+      <div class="min-w-0 flex-[1_1_380px]">
+        <SectionHeading class="mb-4">Let's make technology work for you</SectionHeading>
+        <p class="m-0 mb-6 text-lg leading-relaxed text-body">
+          Tell us about your systems, your goals, or the problem that keeps coming back. The first call is free.
+        </p>
+        <a href={site.calendly} class="btn-accent px-7 py-4 text-lg">Book a free call</a>
+      </div>
+      <ConsultCard class="min-w-0 flex-[1_1_380px]" />
+    </div>
+  </section>
+</BaseLayout>

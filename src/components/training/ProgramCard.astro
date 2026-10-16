@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatLabel } from '@/lib/content';
+
+interface Props { program: CollectionEntry<'programs'>; headingLevel?: 'h2' | 'h3' }
+const { program, headingLevel: Heading = 'h3' } = Astro.props;
+const { title, code, category, summary, format, level, duration } = program.data;
+const facts = [
+  { label: 'Format', value: formatLabel(format) },
+  { label: 'Level', value: level },
+  { label: 'Duration', value: duration },
+];
+---
+
+<article
+  data-category={category}
+  class="group relative flex h-full flex-col rounded-[18px] border border-line bg-surface p-6 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-[0_18px_40px_rgba(0,0,0,.1)]"
+>
+  <div class="mb-5 flex items-start justify-between gap-4">
+    <span aria-hidden="true" class="flex size-14 shrink-0 items-center justify-center rounded-[12px] bg-tile font-mono text-[17px] text-accent">{code}</span>
+    <span class="rounded-md bg-tag-bg px-2 py-[3px] font-mono text-xs text-tag-ink">{category}</span>
+  </div>
+  <Heading class="heading-serif m-0 text-[22px] leading-snug">
+    <a href={`/training/${program.id}`} class="no-underline after:absolute after:inset-0 after:rounded-[inherit]">{title}</a>
+  </Heading>
+  <p class="mt-2.5 mb-5 flex-1 text-[15px] leading-relaxed text-muted">{summary}</p>
+  <dl class="m-0 grid grid-cols-3 gap-3 border-t border-line pt-4">
+    {
+      facts.map((f) => (
+        <div class="min-w-0">
+          <dt class="font-mono text-[11px] tracking-[0.06em] text-subtle uppercase">{f.label}</dt>
+          <dd class="m-0 mt-1 text-[13px] leading-snug font-medium break-words">{f.value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+  <span aria-hidden="true" class="mt-5 inline-flex items-center gap-2 font-mono text-sm">
+    View program
+    <svg class="size-4 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+  </span>
+</article>

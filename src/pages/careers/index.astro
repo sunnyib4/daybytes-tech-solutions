@@ -1,0 +1,117 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import ApplicationForm from '@/components/careers/ApplicationForm.astro';
+import { Image } from 'astro:assets';
+import businessTechnologyIllustration from '@/assets/projects/vectorelements-lyKf9UWWrdg-unsplash.jpg';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { formatDate, getOpenJobs, jobTypeLabel } from '@/lib/content';
+
+const jobs = await getOpenJobs();
+const roles = jobs.map((j) => ({ value: j.id, label: j.data.title }));
+
+const pillars = [
+  { title: 'How we work', text: 'Practical, client first and reliable, with the same values we promise our clients: professionalism, transparency and attention to detail.' },
+  { title: 'Where we work', text: 'Our base is in Lagos, Nigeria, with a mix of on site, hybrid and remote roles depending on the project and team.' },
+  { title: 'How you grow', text: 'Learn on real client projects, with access to our Smart Learning programs to build new skills and deepen your expertise.' },
+];
+---
+
+<BaseLayout
+  title="Careers"
+  description="Work at Daybytes Tech Solutions in Lagos. See open roles in IT support, web development and training, or send us your CV."
+  image="/og/default.png"
+  overlayHeader
+>
+  <PageHero
+    eyebrow="Careers"
+    title="Build smart tech with us"
+    intro="We help businesses and individuals make technology work for them. If you like solving real problems for real people, we'd like to hear from you."
+    breadcrumbs={[{ label: 'Careers', href: '/careers' }]}
+  >
+    <div class="mt-9 flex flex-wrap gap-3.5">
+      <a href="#roles" class="btn-accent px-7 py-4 text-lg">See open roles</a>
+      <a href="#apply" class="btn-dark px-7 py-4 text-lg font-normal">Send us your CV</a>
+    </div>
+  </PageHero>
+
+  <section aria-labelledby="life-title" class="px-4 py-16 sm:px-6">
+    <div class="mx-auto flex max-w-[1100px] flex-wrap items-start gap-14">
+      <div class="min-w-0 flex-[1_1_420px]">
+        <SectionHeading id="life-title" class="mb-8">Working at Daybytes</SectionHeading>
+        <ol data-reveal-stagger class="m-0 flex list-none flex-col gap-[22px] p-0">
+          {
+            pillars.map((p, i) => (
+              <li class="flex gap-4">
+                <span aria-hidden="true" class="pt-1 font-mono text-sm text-accent-text">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div>
+                  <h3 class="m-0 text-lg font-semibold">{p.title}</h3>
+                  <p class="mt-1.5 mb-0 leading-relaxed text-muted">{p.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <Image
+        data-reveal
+        src={businessTechnologyIllustration}
+        alt="Illustration of people using connected business technology"
+        class="aspect-[4/3] min-w-0 flex-[1_1_420px] rounded-[18px] object-cover shadow-[0_20px_50px_rgba(0,0,0,.12)]"
+      />
+    </div>
+  </section>
+
+  <section id="roles" aria-labelledby="roles-title" class="scroll-mt-6 px-4 py-16 sm:px-6">
+    <div class="mx-auto max-w-[1100px]">
+      <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <SectionHeading id="roles-title">Open roles</SectionHeading>
+        <p class="m-0 font-mono text-sm text-subtle">{jobs.length} open {jobs.length === 1 ? 'role' : 'roles'}</p>
+      </div>
+      {
+        jobs.length > 0 ? (
+          <ul data-reveal-stagger class="m-0 flex list-none flex-col gap-3 p-0">
+            {jobs.map((job) => (
+              <li>
+                <a
+                  href={`/careers/${job.id}`}
+                  class="group flex flex-wrap items-center gap-x-8 gap-y-3 rounded-[14px] border border-line bg-surface px-6 py-5 text-ink no-underline transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[0_14px_34px_rgba(0,0,0,.1)]"
+                >
+                  <span class="min-w-0 flex-[1_1_260px]">
+                    <span class="label-mono block text-subtle">{job.data.department}</span>
+                    <span class="heading-serif mt-1 block text-[22px]">{job.data.title}</span>
+                  </span>
+                  <span class="flex flex-wrap gap-2 font-mono text-xs">
+                    <span class="rounded-full border border-line-strong px-3 py-1">{job.data.location}</span>
+                    <span class="rounded-full border border-line-strong px-3 py-1">{jobTypeLabel[job.data.type]}</span>
+                    <span class="rounded-full border border-line-strong px-3 py-1">Posted {formatDate(job.data.posted)}</span>
+                  </span>
+                  <svg class="size-6 shrink-0 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div data-reveal class="flex flex-wrap items-center justify-between gap-6 rounded-[18px] border border-dashed border-line-strong bg-surface px-7 py-8">
+            <div>
+              <p class="heading-serif m-0 text-2xl">No open roles right now. Send us your CV</p>
+              <p class="mt-2 mb-0 max-w-[60ch] leading-relaxed text-muted">We're always glad to hear from good people. Send a general application and we'll reach out when something fits.</p>
+            </div>
+            <a href="#apply" class="btn-accent px-6 py-3.5">Send your CV</a>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <section id="apply" aria-labelledby="apply-title" class="scroll-mt-6 px-4 pt-10 pb-24 sm:px-6">
+    <div class="mx-auto max-w-[860px] rounded-[18px] border border-line bg-surface p-6 sm:p-9">
+      <h2 id="apply-title" class="heading-serif m-0 mb-2 text-[28px]">{jobs.length ? 'Apply or send a general application' : 'General application'}</h2>
+      <ApplicationForm roles={roles} id="general-form" />
+    </div>
+  </section>
+</BaseLayout>

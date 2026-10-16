@@ -1,0 +1,17 @@
+---
+// Stand-in for photography the client still needs to supply.
+interface Props { label: string; class?: string; [key: `data-${string}`]: unknown }
+const { label, class: className, ...rest } = Astro.props;
+---
+
+<div
+  {...rest}
+  role="img"
+  aria-label={label}
+  class:list={[
+    'flex items-center justify-center rounded-[18px] bg-placeholder p-6 text-center font-mono text-sm text-muted shadow-[0_20px_50px_rgba(0,0,0,.12)]',
+    className,
+  ]}
+>
+  [Photo: {label}]
+</div>

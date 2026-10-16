@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import { site } from '@/data/site';
+---
+
+<BaseLayout title="Page not found" description="The page you were looking for doesn't exist." overlayHeader>
+  <PageHero eyebrow="404" title="We couldn't find that page" intro="It may have moved when we rebuilt our site. Try one of these instead.">
+    <div class="mt-9 flex flex-wrap gap-3.5">
+      <a href="/" class="btn-accent px-7 py-4 text-lg">Go to the homepage</a>
+      <a href="/services" class="btn-dark px-7 py-4 text-lg font-normal">See our services</a>
+    </div>
+    <p class="mt-8 mb-24 text-body">
+      Or call us on <a href={site.phone.href} class="link">{site.phone.display}</a>.
+    </p>
+  </PageHero>
+</BaseLayout>

@@ -1,0 +1,21 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import TestimonialCard from '@/components/ui/TestimonialCard.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+
+interface Props { testimonials: CollectionEntry<'testimonials'>[]; title?: string }
+const { testimonials, title = 'What clients say' } = Astro.props;
+---
+
+{
+  testimonials.length > 0 && (
+    <section aria-labelledby="quotes-title" class="px-4 py-20 sm:px-6">
+      <div class="mx-auto max-w-[1100px]">
+        <SectionHeading id="quotes-title" class="mb-8 text-center">{title}</SectionHeading>
+        <div data-reveal-stagger class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-4">
+          {testimonials.map((t) => <TestimonialCard testimonial={t} />)}
+        </div>
+      </div>
+    </section>
+  )
+}

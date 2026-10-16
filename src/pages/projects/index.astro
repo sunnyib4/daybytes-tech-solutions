@@ -1,0 +1,33 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import ProjectStack from '@/components/projects/ProjectStack';
+import ConsultCard from '@/components/ui/ConsultCard.astro';
+import { getProjects } from '@/lib/content';
+import { toStackProjects } from '@/lib/projects';
+
+const projects = await toStackProjects(await getProjects());
+---
+
+<BaseLayout
+  title="Projects"
+  description="Recent client work from Daybytes Tech Solutions, including ecommerce websites, corporate sites and a voice app for sales practice."
+  overlayHeader
+>
+  <PageHero
+    eyebrow="Projects"
+    title="Recent projects"
+    intro="A look at the problems clients brought us, what we did, and how it turned out."
+    breadcrumbs={[{ label: 'Projects', href: '/projects' }]}
+  />
+
+  <section aria-label="All projects" class="px-4 pt-6 pb-20 sm:px-6">
+    <div class="mx-auto max-w-[1100px]">
+      <ProjectStack client:load showFilters projects={projects} headingLevel="h2" />
+    </div>
+  </section>
+
+  <section aria-label="Get in touch" class="px-4 pb-24 sm:px-6">
+    <ConsultCard class="mx-auto max-w-[760px]" />
+  </section>
+</BaseLayout>

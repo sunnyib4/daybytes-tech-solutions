@@ -1,0 +1,115 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import LocalBusinessSchema from '@/components/LocalBusinessSchema.astro';
+import Hero from '@/components/home/Hero.astro';
+import ServiceCard from '@/components/ui/ServiceCard.astro';
+import PostCard from '@/components/ui/PostCard.astro';
+import FaqList from '@/components/ui/FaqList.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import ConsultCard from '@/components/ui/ConsultCard.astro';
+import Stats from '@/components/sections/Stats.astro';
+import Approach from '@/components/sections/Approach.astro';
+import Testimonials from '@/components/sections/Testimonials.astro';
+import RecentProjects from '@/components/sections/RecentProjects.astro';
+import TrainingHighlight from '@/components/sections/TrainingHighlight.astro';
+import businessTechnologyIllustration from '@/assets/projects/vectorelements-lyKf9UWWrdg-unsplash.jpg';
+import { site } from '@/data/site';
+import { getFaqs, getPosts, getServices, getTestimonials } from '@/lib/content';
+
+const [services, testimonials, faqs, posts] = await Promise.all([getServices(), getTestimonials(), getFaqs(), getPosts()]);
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.data.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.body?.trim() },
+  })),
+};
+---
+
+<BaseLayout
+  title={site.name}
+  description="IT support, web development, computer repair, training and business optimization in Lagos, Nigeria. Book a free call with Daybytes Tech Solutions."
+  overlayHeader
+>
+  <Fragment slot="head">
+    <LocalBusinessSchema />
+    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  </Fragment>
+
+  <Hero />
+
+  <Stats />
+
+  <!-- SERVICES -->
+  <section aria-labelledby="services-title" class="px-4 pt-10 pb-24 sm:px-6">
+    <div class="mx-auto max-w-[760px]">
+      <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <SectionHeading id="services-title" class="sm:text-[40px]">What we do</SectionHeading>
+        <a href="/contact" class="link font-mono text-sm">Request a service <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+      <ul data-reveal-stagger class="m-0 flex list-none flex-col gap-3 p-0">
+        {services.map((s) => <li><ServiceCard service={s} /></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <TrainingHighlight />
+
+  <!-- ABOUT -->
+  <section aria-labelledby="about-title" class="px-4 py-20 sm:px-6">
+    <div class="mx-auto flex max-w-[1100px] flex-wrap items-center gap-14">
+      <div class="min-w-0 flex-[1_1_420px]">
+        <SectionHeading id="about-title" class="mb-[18px]">About Daybytes</SectionHeading>
+        <p class="m-0 mb-[18px] text-lg leading-[1.65] text-body">
+          A trusted partner for businesses and individuals. We work with organizations to{' '}
+          <span class="underline decoration-accent decoration-2 underline-offset-4">simplify complexity, improve operational efficiency</span>, and support lasting business
+          performance.
+        </p>
+        <p class="m-0 mb-7 text-lg leading-[1.65] text-body">
+          Our team combines strategic insight with hands on experience to deliver measurable results across operations, planning, and execution for startups, SMEs, and
+          larger enterprises alike.
+        </p>
+        <a href="/about" class="btn-accent rounded-full px-6 py-3.5">Learn more <span class="sr-only">about Daybytes</span></a>
+      </div>
+      <Image
+        data-reveal
+        src={businessTechnologyIllustration}
+        alt="Illustration of people using connected business technology"
+        class="aspect-[3/2] min-w-0 flex-[1_1_420px] rounded-[18px] object-cover shadow-[0_20px_50px_rgba(0,0,0,.12)]"
+      />
+    </div>
+  </section>
+
+  <Approach />
+  <RecentProjects />
+
+  <Testimonials testimonials={testimonials} />
+
+  <!-- CONSULT + FAQ -->
+  <section aria-label="Consultation and frequently asked questions" class="px-4 py-20 sm:px-6">
+    <div class="mx-auto flex max-w-[1100px] flex-wrap gap-8">
+      <ConsultCard data-reveal class="min-w-0 flex-[1_1_380px]" />
+      <div data-reveal class="min-w-0 flex-[1.4_1_440px]">
+        <h2 class="heading-serif m-0 mb-5 text-[32px]">Frequently asked</h2>
+        <FaqList faqs={faqs} />
+      </div>
+    </div>
+  </section>
+
+  <!-- INSIGHTS -->
+  <section aria-labelledby="insights-title" class="px-4 pt-14 pb-24 sm:px-6">
+    <div class="mx-auto max-w-[1100px]">
+      <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <SectionHeading id="insights-title">Insights</SectionHeading>
+        <a href="/blog" class="link font-mono text-sm">All posts <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div data-reveal-stagger class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-5">
+        {posts.slice(0, 3).map((p) => <PostCard post={p} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

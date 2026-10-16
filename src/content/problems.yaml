@@ -1,0 +1,65 @@
+# Problems shown in the rotating hero card on the homepage.
+# Edit, reorder (via `order`) or add entries. Each needs a unique `id`.
+
+- id: office-wifi
+  order: 1
+  request: My office Wi‑Fi drops every afternoon
+  service: IT Support
+  cause: Router overload
+  nextStep: Free call
+
+- id: slow-laptop
+  order: 2
+  request: My laptop is so slow I can't work
+  service: Computer Repair
+  cause: Failing drive or malware
+  nextStep: Diagnostic visit
+
+- id: deleted-files
+  order: 3
+  request: I deleted client files and the backup failed
+  service: Data Recovery
+  cause: Recoverable drive
+  nextStep: Assessment on the same day
+
+- id: website-down
+  order: 4
+  request: My website is down and customers can't order
+  service: Web Development
+  cause: Hosting or plugin error
+  nextStep: Urgent fix
+
+- id: no-website
+  order: 5
+  request: My business has no website yet
+  service: Web Development
+  cause: Need online presence
+  nextStep: Free consultation
+
+- id: manual-paperwork
+  order: 6
+  request: Our team wastes hours on manual paperwork
+  service: Business Optimization
+  cause: No automation
+  nextStep: Workflow review
+
+- id: digital-skills
+  order: 7
+  request: My staff need to learn digital tools and AI
+  service: Training programs
+  cause: Skills gap
+  nextStep: Pick a program
+
+- id: new-laptop
+  order: 8
+  request: I need a reliable laptop for my business
+  service: Computer Sales
+  cause: Right specs for the job
+  nextStep: Free recommendation
+
+- id: admin-overload
+  order: 9
+  request: I'm drowning in emails and admin work
+  service: Virtual Assistant
+  cause: Admin overload
+  nextStep: Free call

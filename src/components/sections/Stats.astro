@@ -1,0 +1,20 @@
+---
+import { site } from '@/data/site';
+---
+
+<section aria-label="Daybytes in numbers" class="px-4 py-20 sm:px-6">
+  <dl data-reveal-stagger class="mx-auto m-0 grid max-w-[1100px] grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
+    {
+      site.stats.map((s) => {
+        return (
+          <div class="flex flex-col border-t-[1.5px] border-ink pt-[18px]">
+            <dt class="order-last mt-2 text-base leading-normal text-muted">{s.label}</dt>
+            <dd class="heading-serif order-first m-0 text-[52px] leading-tight">
+              <span data-count={s.value} data-suffix={s.suffix}>{`${s.value}${s.suffix}`}</span>
+            </dd>
+          </div>
+        );
+      })
+    }
+  </dl>
+</section>

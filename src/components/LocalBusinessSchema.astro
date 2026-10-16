@@ -1,0 +1,34 @@
+---
+import { site } from '@/data/site';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${site.url}/#business`,
+  name: site.name,
+  url: site.url,
+  logo: `${site.url}/brand/daybytes-logo-512.png`,
+  image: `${site.url}/og/default.png`,
+  description: site.description,
+  telephone: site.phone.e164,
+  email: site.email,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: site.address.locality,
+    addressRegion: site.address.region,
+    addressCountry: site.address.country,
+  },
+  areaServed: ['Lagos', 'Nigeria', 'Worldwide'],
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '08:00',
+      closes: '18:00',
+    },
+  ],
+  sameAs: site.socials.map((s) => s.href),
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

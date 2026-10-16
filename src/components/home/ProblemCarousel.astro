@@ -1,0 +1,239 @@
+---
+// Rotating card of real client problems on top of the hero sphere.
+// Without JavaScript it shows the first problem as a static card.
+import { getProblems } from '@/lib/content';
+
+const problems = await getProblems();
+const describe = (p: (typeof problems)[number]['data']) =>
+  `Common challenge: “${p.request}”. Service: ${p.service}. Likely cause: ${p.cause}. Next step: ${p.nextStep}.`;
+---
+
+<div
+  data-carousel
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Problems our clients bring us"
+  class="absolute inset-x-[4%] bottom-[1%] flex flex-col gap-3 sm:top-[42%] sm:right-[-2%] sm:bottom-auto sm:left-[22%]"
+>
+  <!-- Screen readers get the whole problem at once instead of the typing effect. -->
+  <p data-live aria-live="polite" aria-atomic="true" class="sr-only">{describe(problems[0].data)}</p>
+
+  <div data-stage aria-hidden="true" class="grid">
+    {
+      problems.map((p, i) => (
+        <div data-slide data-description={describe(p.data)} data-active={i === 0 ? '' : undefined} data-bar-in={i === 0 ? '' : undefined} data-panel-in={i === 0 ? '' : undefined} class="col-start-1 row-start-1 flex flex-col gap-3 self-start">
+          <div data-bar class="flex items-center gap-3 rounded-xl bg-accent px-[18px] py-3.5 text-[15px] font-medium text-on-accent shadow-[0_12px_30px_rgba(0,0,0,.18)] sm:text-base">
+            <svg width="22" height="22" viewBox="0 0 24 24" class="shrink-0">
+              <circle cx="12" cy="12" r="9" fill="#FFFFFF" stroke="#2563EB" stroke-width="3" />
+            </svg>
+            <span class="relative">
+              <span class="invisible">“{p.data.request}”</span>
+              <span data-typed class="absolute inset-0">“{p.data.request}”</span>
+            </span>
+          </div>
+          <div data-panel class="rounded-xl bg-surface px-[22px] py-5 shadow-[0_18px_40px_rgba(0,0,0,.2)]">
+            <p class="m-0 mb-3.5 text-[15px] font-medium text-accent-text">Daybytes diagnosis</p>
+            <dl class="m-0 grid grid-cols-3 gap-4">
+              <div>
+                <dt class="mb-1.5 font-mono text-xs text-subtle">Service</dt>
+                <dd class="m-0 text-[15px] leading-snug font-medium sm:text-[17px]">{p.data.service}</dd>
+              </div>
+              <div>
+                <dt class="mb-1.5 font-mono text-xs text-subtle">Likely cause</dt>
+                <dd class="m-0 text-[15px] leading-snug font-medium sm:text-[17px]">{p.data.cause}</dd>
+              </div>
+              <div>
+                <dt class="mb-1.5 font-mono text-xs text-subtle">Next step</dt>
+                <dd class="m-0 text-[15px] leading-snug font-medium sm:text-[17px]">{p.data.nextStep}</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div data-controls hidden class="flex items-center gap-1 self-start rounded-full bg-surface py-1 pr-1 pl-2 shadow-[0_10px_24px_rgba(0,0,0,.14)]">
+    {
+      problems.map((p, i) => (
+        <button type="button" data-dot={i} aria-label={`Show problem ${i + 1} of ${problems.length}: ${p.data.request}`} aria-current={i === 0 ? 'true' : undefined} class="group flex size-6 cursor-pointer items-center justify-center rounded-full">
+          <span class="block h-2 w-2 rounded-full bg-ink/50 transition-[width,background-color] duration-300 group-hover:bg-ink/75 group-aria-[current=true]:w-5 group-aria-[current=true]:bg-accent" />
+        </button>
+      ))
+    }
+    <button type="button" data-toggle aria-label="Pause rotating problems" class="ml-1 flex size-8 cursor-pointer items-center justify-center rounded-full text-ink hover:bg-ink/5">
+      <svg data-icon-pause viewBox="0 0 16 16" class="size-3.5" fill="currentColor" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1" /><rect x="9.5" y="2" width="3.5" height="12" rx="1" /></svg>
+      <svg data-icon-play viewBox="0 0 16 16" class="hidden size-3.5" fill="currentColor" aria-hidden="true"><path d="M4 2.5v11a1 1 0 0 0 1.5.86l9-5.5a1 1 0 0 0 0-1.72l-9-5.5A1 1 0 0 0 4 2.5Z" /></svg>
+    </button>
+  </div>
+
+</div>
+
+<style is:global>
+  [data-slide] {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 350ms ease,
+      visibility 350ms;
+  }
+  [data-slide][data-active] {
+    opacity: 1;
+    visibility: visible;
+  }
+  [data-carousel][data-js] [data-bar],
+  [data-carousel][data-js] [data-panel] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 450ms ease,
+      transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  [data-carousel][data-js] [data-bar] {
+    transform: translateY(6px);
+    transition-duration: 250ms;
+  }
+  [data-carousel][data-js] [data-bar-in] [data-bar],
+  [data-carousel][data-js] [data-panel-in] [data-panel] {
+    opacity: 1;
+    transform: none;
+  }
+  /* Reduced motion: keep a plain cross-fade between problems, nothing else moves. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-slide] {
+      transition-duration: 300ms !important;
+    }
+  }
+</style>
+
+<script>
+  import { onPageLoad, prefersReducedMotion } from '@/scripts/lifecycle';
+  import { PROBLEM_EVENT } from '@/scripts/network';
+
+  const HOLD_MS = 4200; // time each problem stays up, from its first frame
+  const TYPE_BUDGET_MS = 1000; // the request never takes longer than this to type
+
+  onPageLoad((signal) => {
+    const root = document.querySelector<HTMLElement>('[data-carousel]');
+    if (!root) return;
+    const slides = [...root.querySelectorAll<HTMLElement>('[data-slide]')];
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-dot]')];
+    const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]')!;
+    const live = root.querySelector<HTMLElement>('[data-live]')!;
+    if (slides.length < 2) return;
+
+    const reduced = prefersReducedMotion();
+    root.dataset.js = '';
+    root.querySelector<HTMLElement>('[data-controls]')!.hidden = false;
+
+    let current = 0;
+    let timer: number | undefined;
+    let typing: number | undefined;
+    let shownAt = performance.now();
+    let remaining = HOLD_MS;
+    const pausedBy = new Set<string>();
+
+    const typeInto = (el: HTMLElement, text: string, done: () => void) => {
+      const step = Math.min(32, TYPE_BUDGET_MS / text.length);
+      let i = 0;
+      el.textContent = '';
+      typing = window.setInterval(() => {
+        el.textContent = text.slice(0, ++i);
+        if (i >= text.length) {
+          window.clearInterval(typing);
+          done();
+        }
+      }, step);
+    };
+
+    const show = (next: number) => {
+      window.clearInterval(typing);
+      const prev = slides[current];
+      const slide = slides[next];
+      const typed = slide.querySelector<HTMLElement>('[data-typed]')!;
+      const full = typed.previousElementSibling!.textContent ?? '';
+
+      prev.removeAttribute('data-active');
+      if (prev !== slide) {
+        window.setTimeout(() => {
+          if (!prev.hasAttribute('data-active')) prev.removeAttribute('data-bar-in'), prev.removeAttribute('data-panel-in');
+        }, 400);
+      }
+
+      if (reduced) {
+        typed.textContent = full;
+        slide.setAttribute('data-bar-in', '');
+        slide.setAttribute('data-panel-in', '');
+        slide.setAttribute('data-active', '');
+      } else {
+        slide.removeAttribute('data-panel-in');
+        slide.setAttribute('data-active', '');
+        requestAnimationFrame(() => slide.setAttribute('data-bar-in', ''));
+        typeInto(typed, full, () => window.setTimeout(() => slide.setAttribute('data-panel-in', ''), 120));
+      }
+
+      current = next;
+      // Lets the hero sphere fire a burst of connections for the new problem.
+      window.dispatchEvent(new CustomEvent(PROBLEM_EVENT, { detail: { index: next } }));
+      live.textContent = slide.dataset.description ?? '';
+      dots.forEach((d, i) => (i === next ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current')));
+      shownAt = performance.now();
+      remaining = HOLD_MS;
+      schedule();
+    };
+
+    const schedule = () => {
+      window.clearTimeout(timer);
+      if (pausedBy.size) return;
+      timer = window.setTimeout(() => show((current + 1) % slides.length), remaining);
+    };
+
+    const pause = (reason: string) => {
+      if (!pausedBy.size) {
+        window.clearTimeout(timer);
+        remaining = Math.max(HOLD_MS - (performance.now() - shownAt), 0);
+      }
+      pausedBy.add(reason);
+    };
+    const resume = (reason: string) => {
+      pausedBy.delete(reason);
+      if (!pausedBy.size) {
+        remaining = Math.max(remaining, 1500);
+        shownAt = performance.now() - (HOLD_MS - remaining);
+        schedule();
+      }
+    };
+
+    // Pause on hover and keyboard focus, when the tab is hidden, when the hero
+    // is off-screen, and when the visitor presses the pause button.
+    root.addEventListener('mouseenter', () => pause('hover'), { signal });
+    root.addEventListener('mouseleave', () => resume('hover'), { signal });
+    root.addEventListener('focusin', () => pause('focus'), { signal });
+    root.addEventListener('focusout', (e) => !root.contains(e.relatedTarget as Node) && resume('focus'), { signal });
+    document.addEventListener('visibilitychange', () => (document.hidden ? pause('hidden') : resume('hidden')), { signal });
+    const io = new IntersectionObserver(([entry]) => (entry.isIntersecting ? resume('offscreen') : pause('offscreen')));
+    io.observe(root);
+    signal.addEventListener('abort', () => {
+      io.disconnect();
+      window.clearTimeout(timer);
+      window.clearInterval(typing);
+    });
+
+    dots.forEach((dot, i) => dot.addEventListener('click', () => i !== current && show(i), { signal }));
+
+    toggle.addEventListener(
+      'click',
+      () => {
+        const stopped = pausedBy.has('user');
+        stopped ? resume('user') : pause('user');
+        toggle.setAttribute('aria-label', stopped ? 'Pause rotating problems' : 'Play rotating problems');
+        toggle.querySelector('[data-icon-pause]')!.classList.toggle('hidden', !stopped);
+        toggle.querySelector('[data-icon-play]')!.classList.toggle('hidden', stopped);
+        live.setAttribute('aria-live', stopped ? 'polite' : 'off');
+      },
+      { signal },
+    );
+
+    schedule();
+  });
+</script>

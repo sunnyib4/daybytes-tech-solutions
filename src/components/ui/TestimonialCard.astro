@@ -1,0 +1,13 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { testimonial: CollectionEntry<'testimonials'> }
+const { testimonial } = Astro.props;
+---
+
+<figure class="m-0 flex flex-col gap-[18px] rounded-[14px] border border-line bg-surface p-6 transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(0,0,0,.08)]">
+  <blockquote class="m-0 text-[17px] leading-relaxed">“{testimonial.body?.trim()}”</blockquote>
+  <figcaption class="mt-auto">
+    <p class="m-0 font-semibold">{testimonial.data.name}</p>
+    <p class="mt-0.5 mb-0 text-sm text-subtle">{testimonial.data.role}</p>
+  </figcaption>
+</figure>

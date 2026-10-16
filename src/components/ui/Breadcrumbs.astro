@@ -1,0 +1,33 @@
+---
+interface Props { items: { label: string; href: string }[] }
+const { items } = Astro.props;
+const trail = [{ label: 'Home', href: '/' }, ...items];
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: trail.map((item, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: item.label,
+    item: new URL(item.href, Astro.site).href,
+  })),
+};
+---
+
+<nav aria-label="Breadcrumb" class="mb-6 font-mono text-[13px] text-subtle">
+  <ol class="m-0 flex list-none flex-wrap items-center gap-2 p-0">
+    {
+      trail.map((item, i) => (
+        <li class="flex items-center gap-2">
+          {i > 0 && <span aria-hidden="true">/</span>}
+          {i === trail.length - 1 ? (
+            <span aria-current="page" class="text-ink">{item.label}</span>
+          ) : (
+            <a href={item.href} class="underline-offset-4 hover:text-accent-text hover:underline">{item.label}</a>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

@@ -1,0 +1,27 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import { site } from '@/data/site';
+---
+<!-- Internal draft for lawyer review only. -->
+<BaseLayout title="Refund & Cancellation Policy" description="Draft refund and cancellation terms for Daybytes services and training programs. Fees and deadlines need business confirmation." noindex overlayHeader>
+  <PageHero eyebrow="Legal" title="Refund & Cancellation Policy" intro="This page is a draft for legal review before launch." breadcrumbs={[{ label: 'Refund Policy', href: '/refund-policy' }]} />
+
+  <section class="mx-auto max-w-[760px] px-4 py-16 sm:px-6">
+    <div class="prose prose-lg max-w-none">
+      <p><strong>Draft:</strong> This policy is a working draft and must be reviewed for applicable legal compliance before publication. The proposed commercial defaults below are subject to confirmation in the relevant customer documents.</p>
+      <h2>IT and web services</h2>
+      <p>Refunds for bespoke development, IT projects, support retainers, or technical consulting are handled in line with the written service agreement. If a project has not started or a service has not been delivered, a partial refund may be considered at the company’s discretion.</p>
+      <p>The proposed service refund request window is 7 calendar days from the date payment is received. A full refund is generally available if substantive project work has not started. If work has started with the client's authorization, Daybytes will charge only for work completed and any agreed, reasonable, non-recoverable costs, then refund any eligible balance. Applicable refund rights remain protected if Daybytes fails to deliver the agreed service. The policy remains subject to applicable law.</p>
+      <p>The applicable service-specific terms, including scope, payment, and any agreed costs, must be disclosed in the project proposal, invoice, and service agreement before payment.</p>
+      <h2>Training programs</h2>
+      <p>The proposed training policy uses a unified baseline with program-specific exceptions. Cancellation more than 7 days before training is eligible for a full refund, subject to lawful, disclosed non-recoverable costs. Cancellation from 3 to 7 days before training may be transferred to another cohort or refunded less a reasonable, disclosed cancellation charge. Cancellation less than 72 hours before training may be transferred subject to availability; disclosed and lawful cancellation charges may apply.</p>
+      <p>After training begins, refunds generally do not apply to training already delivered, subject to applicable law and individual circumstances. If Daybytes cancels a program, the learner may receive a full refund for the undelivered program or accept a replacement cohort.</p>
+      <p>Exceptions may apply to self-paced digital courses, intensive bootcamps, corporate training contracts, and cases where Daybytes materially changes or fails to deliver the program. Applicable program-specific terms must be disclosed in the program terms and training checkout before payment.</p>
+      <h2>How to request a refund</h2>
+      <p>Contact us in writing at <a href={`mailto:${site.email}`}>{site.email}</a> with the date of payment, nature of the service, and the reason for the request. We may ask for evidence or supporting information before resolving the request.</p>
+      <h2>Contact</h2>
+      <p>{site.legalName}<br /><a href={`mailto:${site.email}`}>{site.email}</a><br /><a href={site.phone.href}>{site.phone.display}</a></p>
+    </div>
+  </section>
+</BaseLayout>

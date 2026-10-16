@@ -1,0 +1,6 @@
+---
+interface Props { id?: string; class?: string; as?: 'h1' | 'h2' }
+const { id, class: className, as: Tag = 'h2' } = Astro.props;
+---
+
+<Tag id={id} data-reveal class:list={['heading-serif m-0 text-[32px] leading-tight sm:text-4xl', className]}><slot /></Tag>

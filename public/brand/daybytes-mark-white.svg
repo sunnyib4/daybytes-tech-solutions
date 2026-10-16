@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="34 29 898 897" width="898" height="897" role="img" aria-label="Daybytes Tech Solutions">
+  <title>Daybytes Tech Solutions</title>
+  <defs>
+    <mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="966" height="960">
+      <rect x="0" y="0" width="966" height="960" fill="#fff"/>
+      <rect x="14" y="449" width="424" height="115" rx="20" fill="#000"/>
+    </mask>
+  </defs>
+  <g fill="#FFFFFF" mask="url(#cut)">
+    <path fill-rule="evenodd" d="M34 29H701A230 230 0 0 1 931 259V696A230 230 0 0 1 701 926H34Z M171 160H665A130 130 0 0 1 795 290V664A130 130 0 0 1 665 794H171Z"/>
+    <rect x="160" y="389" width="150" height="60"/>
+    <rect x="305" y="294" width="355" height="366"/>
+  </g>
+</svg>

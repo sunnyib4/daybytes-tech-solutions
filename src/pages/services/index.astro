@@ -1,0 +1,46 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import Approach from '@/components/sections/Approach.astro';
+import Testimonials from '@/components/sections/Testimonials.astro';
+import ServiceCard from '@/components/ui/ServiceCard.astro';
+import ConsultCard from '@/components/ui/ConsultCard.astro';
+import { site } from '@/data/site';
+import { getServices, getTestimonials } from '@/lib/content';
+
+const [services, testimonials] = await Promise.all([getServices(), getTestimonials()]);
+---
+
+<BaseLayout
+  title="IT Services in Lagos"
+  description="IT support, web development, virtual assistants, computer sales and repair, training and business optimization from Daybytes Tech Solutions in Lagos."
+  overlayHeader
+>
+  <PageHero
+    eyebrow="Services"
+    title="Practical IT solutions for businesses and individuals"
+    intro="Choose a service, from system support and website development to team training, or tell us what you need."
+    breadcrumbs={[{ label: 'Services', href: '/services' }]}
+  >
+    <div class="mt-9 flex flex-wrap gap-3.5">
+      <a href={site.calendly} class="btn-accent px-7 py-4 text-lg">Book a free call</a>
+      <a href="/contact" class="btn-dark px-7 py-4 text-lg font-normal">Request a service</a>
+    </div>
+  </PageHero>
+
+  <section aria-labelledby="all-services" class="px-4 pt-6 pb-20 sm:px-6">
+    <div class="mx-auto max-w-[760px]">
+      <h2 id="all-services" class="sr-only">All services</h2>
+      <ul data-reveal-stagger class="m-0 flex list-none flex-col gap-3 p-0">
+        {services.map((s) => <li><ServiceCard service={s} headingLevel="h3" /></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <Approach />
+  <Testimonials testimonials={testimonials.slice(0, 3)} />
+
+  <section aria-label="Get in touch" class="px-4 pt-6 pb-24 sm:px-6">
+    <ConsultCard class="mx-auto max-w-[760px]" />
+  </section>
+</BaseLayout>

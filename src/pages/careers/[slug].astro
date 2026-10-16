@@ -1,0 +1,132 @@
+---
+export const prerender = true;
+
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import ApplicationForm from '@/components/careers/ApplicationForm.astro';
+import { site } from '@/data/site';
+import { formatDate, getOpenJobs, jobTypeLabel, render } from '@/lib/content';
+
+// Only open roles get a page; closed or draft roles are not built at all.
+export const getStaticPaths = (async () => {
+  const jobs = await getOpenJobs();
+  return jobs.map((job) => ({ params: { slug: job.id }, props: { job, roles: jobs.map((j) => ({ value: j.id, label: j.data.title })) } }));
+}) satisfies GetStaticPaths;
+
+const { job, roles } = Astro.props;
+const { Content } = await render(job);
+const { title, department, location, remote, type, summary, responsibilities, requirements, posted, validThrough } = job.data;
+const hasBody = Boolean(job.body?.trim());
+
+const employmentType = { 'full-time': 'FULL_TIME', 'part-time': 'PART_TIME', contract: 'CONTRACTOR', internship: 'INTERN' }[type];
+const list = (items: string[]) => `<ul>${items.map((i) => `<li>${i}</li>`).join('')}</ul>`;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'JobPosting',
+  title,
+  description: `<p>${summary}</p><h3>Responsibilities</h3>${list(responsibilities)}<h3>Requirements</h3>${list(requirements)}`,
+  datePosted: posted.toISOString().slice(0, 10),
+  ...(validThrough && { validThrough: validThrough.toISOString() }),
+  employmentType,
+  hiringOrganization: { '@type': 'Organization', name: site.name, sameAs: site.url, logo: `${site.url}/brand/daybytes-logo-512.png` },
+  ...(remote
+    ? { jobLocationType: 'TELECOMMUTE', applicantLocationRequirements: { '@type': 'Country', name: 'Nigeria' } }
+    : {
+        jobLocation: {
+          '@type': 'Place',
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: site.address.street,
+            addressLocality: site.address.locality,
+            addressRegion: site.address.region,
+            addressCountry: site.address.country,
+          },
+        },
+      }),
+  directApply: true,
+  identifier: { '@type': 'PropertyValue', name: site.name, value: job.id },
+};
+const facts = [
+  { label: 'Department', value: department },
+  { label: 'Location', value: location },
+  { label: 'Type', value: jobTypeLabel[type] },
+  { label: 'Posted', value: formatDate(posted) },
+  ...(validThrough ? [{ label: 'Apply by', value: formatDate(validThrough) }] : []),
+];
+---
+
+<BaseLayout title={`${title}: Careers`} description={summary} image="/og/default.png" overlayHeader>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </Fragment>
+
+  <PageHero
+    eyebrow={department}
+    title={title}
+    intro={summary}
+    breadcrumbs={[
+      { label: 'Careers', href: '/careers' },
+      { label: title, href: `/careers/${job.id}` },
+    ]}
+  >
+    <dl class="mt-8 mb-0 flex flex-wrap gap-x-10 gap-y-4 text-[15px]">
+      {
+        facts.map((f) => (
+          <div>
+            <dt class="label-mono mb-1 text-subtle">{f.label}</dt>
+            <dd class="m-0 font-medium">{f.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <a href="#apply" class="btn-accent mt-9 px-7 py-4 text-lg">Apply for this role</a>
+  </PageHero>
+
+  <section aria-label="About the role" class="px-4 pt-6 pb-16 sm:px-6">
+    <div class="mx-auto grid max-w-[1100px] gap-10 md:grid-cols-2">
+      <div data-reveal>
+        <h2 class="heading-serif m-0 mb-5 text-[28px]">What you'll do</h2>
+        <ul class="m-0 flex list-none flex-col gap-3 p-0 leading-relaxed text-body">
+          {
+            responsibilities.map((r) => (
+              <li class="flex gap-3">
+                <span aria-hidden="true" class="mt-2.5 size-1.5 shrink-0 rounded-full bg-accent" />
+                {r}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div data-reveal>
+        <h2 class="heading-serif m-0 mb-5 text-[28px]">What you'll bring</h2>
+        <ul class="m-0 flex list-none flex-col gap-3 p-0 leading-relaxed text-body">
+          {
+            requirements.map((r) => (
+              <li class="flex gap-3">
+                <svg class="mt-1 size-5 shrink-0 text-accent" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M4 10.5l4 4 8-9" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                {r}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+    {
+      hasBody && (
+        <div class="prose prose-lg mx-auto mt-12 max-w-[1100px]">
+          <Content />
+        </div>
+      )
+    }
+  </section>
+
+  <section id="apply" aria-labelledby="apply-title" class="scroll-mt-6 px-4 pb-24 sm:px-6">
+    <div class="mx-auto max-w-[860px] rounded-[18px] border border-line bg-surface p-6 sm:p-9">
+      <h2 id="apply-title" class="heading-serif m-0 mb-2 text-[28px]">Apply for {title}</h2>
+      <ApplicationForm roles={roles} selected={job.id} />
+    </div>
+  </section>
+</BaseLayout>

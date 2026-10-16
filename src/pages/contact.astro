@@ -1,0 +1,118 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import FaqList from '@/components/ui/FaqList.astro';
+import AjaxForm from '@/components/forms/AjaxForm.astro';
+import Field from '@/components/forms/Field.astro';
+import { site } from '@/data/site';
+import { getFaqs, getServices } from '@/lib/content';
+
+const [services, faqs] = await Promise.all([getServices(), getFaqs()]);
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.data.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.body?.trim() ?? '' },
+  })),
+};
+---
+
+<BaseLayout
+  title="Contact Us"
+  description={`Request a service, book a free call or reach Daybytes Tech Solutions in Lagos on ${site.phone.display} or ${site.email}.`}
+  overlayHeader
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  <PageHero
+    eyebrow="Contact"
+    title="Tell us what you need"
+    intro="Send a service request and we'll get back to you, or book a free call at a time that suits you."
+    breadcrumbs={[{ label: 'Contact', href: '/contact' }]}
+  />
+
+  <section aria-label="Service request and contact details" class="px-4 pt-6 pb-20 sm:px-6">
+    <div class="mx-auto grid max-w-[1100px] grid-cols-[minmax(0,1fr)] items-start gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <!-- FORM -->
+      <div class="rounded-[18px] border border-line bg-surface p-6 sm:p-9">
+        <h2 class="heading-serif m-0 mb-2 text-[28px]">Request a service</h2>
+        <AjaxForm id="request-form" form="contact" subject="New service request: daybytes.com" submitLabel="Send request" success="Thanks. Your request is in. We'll be in touch shortly.">
+          <Field id="name" label="Your name" autocomplete="name" required error="Please enter your name." />
+          <Field id="email" label="Email" type="email" autocomplete="email" required error="Please enter a valid email address." />
+          <Field id="phone" label="Phone or WhatsApp" type="tel" autocomplete="tel" />
+          <Field
+            id="service"
+            label="Service"
+            type="select"
+            required
+            prefill="service"
+            placeholderOption="Choose a service"
+            options={[...services.map((s) => ({ value: s.id, label: s.data.title })), { value: 'other', label: 'Other' }]}
+            error="Please choose a service."
+          />
+          <Field id="message" label="How can we help?" type="textarea" rows={6} required wide error="Please tell us a little about what you need." />
+        </AjaxForm>
+      </div>
+
+      <!-- DETAILS -->
+      <div class="flex flex-col gap-4">
+        <div class="rounded-[18px] bg-[#1A1714] p-7 text-[#F4F3F1] sm:p-8 dark:bg-surface dark:ring-1 dark:ring-line">
+          <h2 class="heading-serif m-0 mb-5 text-2xl">Get in touch</h2>
+          <dl class="m-0 grid gap-4 text-[15px]">
+            <div>
+              <dt class="label-mono mb-1 text-[#B5ADA5]">Phone &amp; WhatsApp</dt>
+              <dd class="m-0"><a href={site.phone.href} class="no-underline hover:underline">{site.phone.display}</a></dd>
+            </div>
+            <div>
+              <dt class="label-mono mb-1 text-[#B5ADA5]">Email</dt>
+              <dd class="m-0"><a href={`mailto:${site.email}`} class="no-underline hover:underline">{site.email}</a></dd>
+            </div>
+            <div>
+              <dt class="label-mono mb-1 text-[#B5ADA5]">Address</dt>
+              <dd class="m-0 leading-relaxed">
+                {site.address.street}<br />{site.address.locality}, {site.address.region}
+              </dd>
+            </div>
+            <div>
+              <dt class="label-mono mb-1 text-[#B5ADA5]">Hours</dt>
+              <dd class="m-0">
+                <ul class="m-0 list-none p-0 font-mono text-sm">
+                  {site.hours.map((h) => <li>{h.label} · {h.value}</li>)}
+                </ul>
+              </dd>
+            </div>
+          </dl>
+        </div>
+        <div class="rounded-[18px] border border-line bg-surface p-7 sm:p-8">
+          <h2 class="heading-serif m-0 mb-2 text-2xl">Prefer to talk?</h2>
+          <p class="m-0 mb-5 leading-relaxed text-muted">Book a free call with an expert. Pick a time that works for you.</p>
+          <a href={site.calendly} class="btn-accent w-full px-6 py-4">Book a free call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALENDLY -->
+  <section aria-labelledby="book-title" class="px-4 pb-20 sm:px-6">
+    <div class="mx-auto max-w-[1100px]">
+      <h2 id="book-title" class="heading-serif m-0 mb-2 text-[32px]">Book a free call</h2>
+      <p class="m-0 mb-6 text-muted">
+        Calendar not loading? <a href={site.calendly} class="link">Open the booking page on Calendly</a>.
+      </p>
+      <iframe
+        src={`${site.calendly}?hide_gdpr_banner=1&embed_type=Inline&embed_domain=daybytes.com`}
+        title="Book a free call with Daybytes on Calendly"
+        loading="lazy"
+        class="block h-[720px] w-full rounded-[18px] border border-line bg-surface"
+      ></iframe>
+    </div>
+  </section>
+
+  <section aria-labelledby="faq-title" class="px-4 pb-24 sm:px-6">
+    <div class="mx-auto max-w-[760px]">
+      <h2 id="faq-title" class="heading-serif m-0 mb-5 text-[32px]">Frequently asked</h2>
+      <FaqList faqs={faqs} />
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,107 @@
+---
+export const prerender = true;
+
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import Testimonials from '@/components/sections/Testimonials.astro';
+import ServiceCard from '@/components/ui/ServiceCard.astro';
+import ConsultCard from '@/components/ui/ConsultCard.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { site } from '@/data/site';
+import { getProjects, getServices, getTestimonials, render } from '@/lib/content';
+
+export const getStaticPaths = (async () => {
+  const services = await getServices();
+  return services.map((service) => ({ params: { slug: service.id }, props: { service } }));
+}) satisfies GetStaticPaths;
+
+const { service } = Astro.props;
+const { Content } = await render(service);
+const { title, code, tag, summary, description } = service.data;
+
+const [services, testimonials, projects] = await Promise.all([getServices(), getTestimonials(), getProjects()]);
+const related = testimonials.filter((t) => t.data.services.includes(service.id));
+const relatedProjects = projects.filter((project) => project.data.service.id === service.id);
+const others = services.filter((s) => s.id !== service.id);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: title,
+  description,
+  serviceType: title,
+  url: new URL(`/services/${service.id}`, Astro.site).href,
+  provider: { '@id': `${site.url}/#business` },
+  areaServed: ['Lagos', 'Nigeria', 'Worldwide'],
+};
+---
+
+<BaseLayout title={title === 'Business Strategy & Operational Optimization' ? 'Business Strategy and Operations' : `${title} in Lagos`} description={description} image="/og/default.png" overlayHeader>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </Fragment>
+
+  <PageHero
+    eyebrow={tag}
+    title={title}
+    intro={summary}
+    breadcrumbs={[
+      { label: 'Services', href: '/services' },
+      { label: title, href: `/services/${service.id}` },
+    ]}
+  >
+    <div class="mt-9 flex flex-wrap gap-3.5">
+      <a href={site.calendly} class="btn-accent px-7 py-4 text-lg">Book a free call</a>
+      <a href={`/contact?service=${service.id}`} class="btn-dark px-7 py-4 text-lg font-normal">Request this service</a>
+    </div>
+  </PageHero>
+
+  <section aria-label={`About ${title}`} class="px-4 pt-6 pb-20 sm:px-6">
+    <div class="mx-auto grid max-w-[1100px] grid-cols-[minmax(0,1fr)] items-start gap-10 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-16">
+      <div class="flex min-w-0 gap-5">
+        <div aria-hidden="true" class="hidden size-[72px] shrink-0 items-center justify-center rounded-[10px] bg-tile font-mono text-[22px] text-accent sm:flex">
+          {code}
+        </div>
+        <div class="prose prose-lg max-w-none min-w-0">
+          <Content />
+        </div>
+      </div>
+      <ConsultCard selected={service.id} class="lg:sticky lg:top-6" />
+    </div>
+  </section>
+
+  <Testimonials testimonials={related} title="What clients say" />
+
+  {
+    relatedProjects.length > 0 && (
+      <section aria-labelledby="related-projects-title" class="px-4 py-12 sm:px-6">
+        <div class="mx-auto max-w-[1100px]">
+          <SectionHeading id="related-projects-title" class="mb-5">Related project work</SectionHeading>
+          <ul class="m-0 flex list-none flex-col gap-3 p-0 sm:flex-row">
+            {relatedProjects.map((project) => (
+              <li class="min-w-0 flex-1">
+                <a href={`/projects/${project.id}`} class="block rounded-[10px] border border-line bg-surface p-5 font-semibold text-ink no-underline hover:border-line-strong">
+                  {project.data.title} <span aria-hidden="true">→</span>
+                  <span class="mt-1 block text-sm font-normal text-muted">Read the {project.data.category.toLowerCase()} case study</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section aria-labelledby="other-services" class="px-4 pt-6 pb-24 sm:px-6">
+    <div class="mx-auto max-w-[1100px]">
+      <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <SectionHeading id="other-services">Other services</SectionHeading>
+        <a href="/services" class="link font-mono text-sm">All services <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+      <ul data-reveal-stagger class="m-0 grid list-none gap-3 p-0 md:grid-cols-2">
+        {others.map((s) => <li class="flex [&>a]:w-full"><ServiceCard service={s} /></li>)}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

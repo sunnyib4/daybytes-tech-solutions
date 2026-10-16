@@ -1,0 +1,30 @@
+---
+import ProjectStack from '@/components/projects/ProjectStack';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { getProjects } from '@/lib/content';
+import { toStackProjects } from '@/lib/projects';
+
+const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, 4);
+const projects = await toStackProjects(featured);
+---
+
+{
+  projects.length > 0 && (
+    <section aria-labelledby="projects-title" class="px-4 py-20 sm:px-6">
+      <div class="mx-auto max-w-[1100px]">
+        <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="label-mono m-0 mb-3 text-accent-text">Case studies</p>
+            <SectionHeading id="projects-title" class="sm:text-[44px]">
+              Recent projects
+            </SectionHeading>
+          </div>
+          <a href="/projects" class="link font-mono text-sm">
+            View all projects <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+        <ProjectStack client:visible={{ rootMargin: '600px' }} projects={projects} />
+      </div>
+    </section>
+  )
+}

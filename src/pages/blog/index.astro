@@ -1,0 +1,27 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import PostCard from '@/components/ui/PostCard.astro';
+import { getPosts } from '@/lib/content';
+
+const posts = await getPosts();
+---
+
+<BaseLayout
+  title="Blog & Insights"
+  description="Practical IT advice for small businesses and professionals from Daybytes Tech Solutions, including hardware buying guides and IT support."
+  overlayHeader
+>
+  <PageHero
+    eyebrow="Blog"
+    title="Insights"
+    intro="Practical advice on hardware, IT support and making technology work for your business."
+    breadcrumbs={[{ label: 'Blog', href: '/blog' }]}
+  />
+
+  <section aria-label="All posts" class="px-4 pt-6 pb-24 sm:px-6">
+    <div data-reveal-stagger class="mx-auto grid max-w-[1100px] grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-5">
+      {posts.map((p) => <PostCard post={p} headingLevel="h2" />)}
+    </div>
+  </section>
+</BaseLayout>

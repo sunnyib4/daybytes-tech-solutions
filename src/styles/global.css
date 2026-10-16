@@ -1,0 +1,185 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+@import '@fontsource-variable/fraunces';
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Design tokens from the approved mockup. Components use the semantic
+   names below, so light/dark only needs to swap these variables. */
+:root {
+  --canvas: #f4f3f1;
+  --surface: #ffffff;
+  --ink: #1a1714;
+  --body: #2e2924;
+  --muted: #4a433d;
+  --subtle: #5a524b;
+  --line: #e3dfda;
+  --line-strong: #d6d0c9;
+  --accent: #f26a1b;
+  --on-accent: #1a1714;
+  --accent-text: #b8480c;
+  --tag-bg: #fde7d8;
+  --tag-ink: #8a3a0c;
+  --placeholder: #e3dfda;
+  --tile: #1a1714;
+  --hero-gradient: linear-gradient(180deg, #f1f0ee 0%, #f1f0ee 48%, #f7c2a2 72%, #f37a2e 90%, #ee5f12 100%);
+  --halo: rgba(255, 255, 255, 0.85);
+  --halo-warm: rgba(243, 122, 46, 0.16);
+  --page-gradient: radial-gradient(ellipse 70% 90% at 92% 0%, rgba(243, 122, 46, 0.28), transparent 70%), linear-gradient(180deg, #f1f0ee, #f4f3f1);
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --canvas: #121110;
+  --surface: #1c1a17;
+  --ink: #f4f3f1;
+  --body: #e4ded8;
+  --muted: #c2bab2;
+  --subtle: #ada49b;
+  --line: #2e2a26;
+  --line-strong: #3a3531;
+  --accent-text: #ff9a5c;
+  --tag-bg: #3a2416;
+  --tag-ink: #ffc29b;
+  --placeholder: #2a2622;
+  --tile: #2a2622;
+  --hero-gradient: linear-gradient(180deg, #151311 0%, #151311 48%, #3a2014 72%, #a8440f 90%, #d9580f 100%);
+  --halo: rgba(255, 170, 120, 0.22);
+  --halo-warm: rgba(217, 88, 15, 0.18);
+  --page-gradient: radial-gradient(ellipse 70% 90% at 92% 0%, rgba(217, 88, 15, 0.3), transparent 70%), linear-gradient(180deg, #151311, #121110);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: 'Geist Variable', system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+  --font-serif: 'Fraunces Variable', Georgia, serif;
+
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-body: var(--body);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-text: var(--accent-text);
+  --color-tag-bg: var(--tag-bg);
+  --color-tag-ink: var(--tag-ink);
+  --color-placeholder: var(--placeholder);
+  --color-tile: var(--tile);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+  }
+  a {
+    color: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center rounded-[10px] font-medium no-underline transition-[background-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_22px_rgba(0,0,0,.14)] active:translate-y-0 active:shadow-none;
+}
+@utility btn-accent {
+  @apply btn bg-accent text-on-accent hover:bg-[#e05d10];
+}
+@utility btn-dark {
+  @apply btn bg-[#111] text-white hover:bg-black dark:bg-white dark:text-[#111] dark:hover:bg-[#f0ece8];
+}
+@utility link {
+  @apply underline decoration-1 underline-offset-4 hover:text-accent-text;
+}
+@utility label-mono {
+  @apply font-mono text-xs tracking-[0.08em] uppercase;
+}
+@utility heading-serif {
+  @apply font-serif font-bold tracking-[-0.01em];
+}
+
+/* Long-form copy (blog posts, service pages) follows the theme tokens. */
+.prose {
+  --tw-prose-body: var(--body);
+  --tw-prose-headings: var(--ink);
+  --tw-prose-lead: var(--body);
+  --tw-prose-links: var(--ink);
+  --tw-prose-bold: var(--ink);
+  --tw-prose-counters: var(--accent-text);
+  --tw-prose-bullets: var(--accent);
+  --tw-prose-hr: var(--line);
+  --tw-prose-quotes: var(--ink);
+  --tw-prose-quote-borders: var(--accent);
+  --tw-prose-th-borders: var(--line-strong);
+  --tw-prose-td-borders: var(--line);
+  --tw-prose-code: var(--ink);
+}
+.prose :where(h2, h3, h4):not(:where(.not-prose *)) {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.prose :where(a):not(:where(.not-prose *)) {
+  text-decoration-color: var(--accent);
+  text-underline-offset: 4px;
+}
+.prose :where(a):hover {
+  color: var(--accent-text);
+}
+.prose :where(table) {
+  display: block;
+  overflow-x: auto;
+}
+
+/* Scroll reveal (classes are added by src/scripts/motion.ts, never in markup). */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    transition:
+      opacity 550ms ease,
+      transform 550ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal-pending {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+/* "→" in text links nudges right on hover. */
+.arrow {
+  display: inline-block;
+  transition: transform 250ms ease;
+}
+a:hover .arrow,
+a:focus-visible .arrow {
+  transform: translateX(4px);
+}
+/* Quotes in our Markdown already carry their own quotation marks. */
+.prose :where(blockquote p:first-of-type)::before,
+.prose :where(blockquote p:last-of-type)::after {
+  content: none;
+}

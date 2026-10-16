@@ -1,0 +1,53 @@
+---
+import { site } from '@/data/site';
+import HeroSphere from './HeroSphere';
+import ProblemCarousel from './ProblemCarousel.astro';
+---
+
+<section aria-labelledby="hero-title" class="relative bg-[image:var(--hero-gradient)] px-4 pt-[124px] pb-24 sm:px-6 lg:pt-[160px] lg:pb-[120px]">
+  <div class="mx-auto flex max-w-[1280px] flex-wrap items-center gap-12">
+    <div class="max-w-[620px] min-w-0 flex-[1_1_460px]">
+      <p class="label-mono m-0 mb-5 text-[13px] text-subtle">IT solutions · Lagos &amp; worldwide</p>
+      <h1 id="hero-title" class="m-0 text-[42px] leading-[1.04] font-medium tracking-[-0.035em] text-balance sm:text-[56px] lg:text-[68px]">
+        Smart tech that keeps your business moving
+      </h1>
+      <p class="mt-7 mb-0 text-lg leading-normal text-body sm:text-[21px]">
+        We help businesses and individuals streamline systems, reduce tech friction, and make smarter choices with proven IT solutions.
+      </p>
+      <div class="mt-9 flex flex-wrap gap-3.5">
+        <a href={site.calendly} class="btn-accent px-[30px] py-[18px] text-lg">Book a free call</a>
+        <a href="/contact" class="btn-dark px-[30px] py-[18px] text-lg font-normal">Tell us what you need</a>
+      </div>
+      <div class="mt-14">
+        <p class="label-mono m-0 mb-3.5 text-body">Helping</p>
+        <ul class="m-0 flex list-none flex-wrap items-center gap-8 p-0 text-xl font-semibold text-ink/90">
+          <li class="font-serif">Founders</li>
+          <li class="tracking-[0.12em] uppercase">Teams</li>
+          <li class="font-serif">Growing businesses</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flex min-w-0 flex-[1_1_520px] justify-center">
+      <div data-sphere class="group relative aspect-square w-full max-w-[600px]">
+        <div aria-hidden="true" class="absolute inset-[2.5%] rounded-full shadow-[0_0_90px_50px_var(--halo),0_0_170px_90px_var(--halo-warm)]"></div>
+        <img
+          src="/images/sphere-fallback.svg"
+          alt=""
+          width="600"
+          height="600"
+          fetchpriority="high"
+          class="absolute inset-[2.5%] size-[95%] rounded-full transition-opacity duration-700 group-data-[sphere-live]:opacity-0"
+        />
+        <HeroSphere client:load />
+        <canvas data-sphere-2d aria-hidden="true" class="absolute inset-[2.5%] size-[95%] rounded-full"></canvas>
+
+        <ProblemCarousel />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '@/scripts/sphere2d';
+</script>

@@ -1,0 +1,30 @@
+# Old WordPress URLs -> new pages (Cloudflare Pages, 301 permanent).
+# /about and /contact keep the same path on the new site, so they need no rule.
+
+/2026/03/01/the-best-business-laptops-for-2026                         /blog/the-best-business-laptops-for-2026                         301
+/2026/03/01/the-best-business-laptops-for-2026/                        /blog/the-best-business-laptops-for-2026                         301
+/2026/03/01/elevate-your-small-business-with-professional-it-assistance  /blog/elevate-your-small-business-with-professional-it-assistance 301
+/2026/03/01/elevate-your-small-business-with-professional-it-assistance/ /blog/elevate-your-small-business-with-professional-it-assistance 301
+
+# WordPress archive, feed and page variants
+/about-us          /about    301
+/about-us/         /about    301
+/contact-us        /contact  301
+/contact-us/       /contact  301
+/home              /         301
+/index.php         /         301
+/blog/page/*       /blog     301
+/category/*        /blog     301
+/author/*          /blog     301
+/tag/*             /blog     301
+/2026/03/01        /blog     301
+/2026/03/01/       /blog     301
+/2026/03           /blog     301
+/2026/03/          /blog     301
+/2026              /blog     301
+/2026/             /blog     301
+/feed              /blog     301
+/feed/             /blog     301
+/comments/feed/    /blog     301
+/wp-login.php      /         301
+/wp-admin/*        /         301

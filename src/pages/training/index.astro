@@ -1,0 +1,152 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import Testimonials from '@/components/sections/Testimonials.astro';
+import ProgramCard from '@/components/training/ProgramCard.astro';
+import ConsultCard from '@/components/ui/ConsultCard.astro';
+import FaqList from '@/components/ui/FaqList.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { site } from '@/data/site';
+import { getFaqs, getPrograms, getTestimonials } from '@/lib/content';
+
+const SERVICE_ID = 'smart-learning-solutions';
+const [programs, testimonials, faqs] = await Promise.all([getPrograms(), getTestimonials(), getFaqs()]);
+const categories = [...new Set(programs.map((p) => p.data.category))];
+
+const audiences = [
+  { title: 'Individuals', text: 'Build practical tech skills for a new career, freelance work, or your own business.' },
+  { title: 'Teams', text: 'Upskill your staff together, on the tools and systems your business actually runs on.' },
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Daybytes training programs',
+  itemListElement: programs.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: new URL(`/training/${p.id}`, Astro.site).href, name: p.data.title })),
+};
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.filter((faq) => ['training', 'startups', 'get-started'].includes(faq.id)).map((faq) => ({
+    '@type': 'Question',
+    name: faq.data.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.body?.trim() ?? '' },
+  })),
+};
+---
+
+<BaseLayout
+  title="Training Programs"
+  description="Practical tech training in Lagos and online, including web development, AI automations, virtual assistance, IT support and productivity tools for individuals and teams."
+  image="/og/default.png"
+  overlayHeader
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  </Fragment>
+
+  <PageHero
+    eyebrow="Smart Learning Solutions"
+    title="Practical tech training for individuals and teams"
+    intro="Explore practical programs in web development, AI automations, virtual assistance and IT support, with skills you can use from day one."
+    breadcrumbs={[{ label: 'Training', href: '/training' }]}
+  >
+    <div class="mt-9 flex flex-wrap gap-3.5">
+      <a href="#programs" class="btn-accent px-7 py-4 text-lg">Browse programs</a>
+      <a href={site.calendly} class="btn-dark px-7 py-4 text-lg font-normal">Book a free call</a>
+    </div>
+  </PageHero>
+
+  <section id="programs" aria-labelledby="programs-title" class="scroll-mt-6 px-4 pt-10 pb-16 sm:px-6">
+    <div class="mx-auto max-w-[1100px]">
+      <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <SectionHeading id="programs-title">Programs</SectionHeading>
+        <p data-filter-count aria-live="polite" class="m-0 font-mono text-sm text-subtle">{programs.length} programs</p>
+      </div>
+
+      <!-- Filter chips: shown only once the script is running; without JS every program is listed. -->
+      <div data-filters hidden role="group" aria-label="Filter programs by category" class="mb-8 flex flex-wrap gap-2">
+        {
+          ['All', ...categories].map((c, i) => (
+            <button
+              type="button"
+              data-filter={i === 0 ? '' : c}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+              class="cursor-pointer rounded-full border border-line-strong bg-surface px-4 py-2 font-mono text-[13px] text-ink transition-colors hover:border-ink aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-surface"
+            >
+              {c}
+            </button>
+          ))
+        }
+      </div>
+
+      <ul data-reveal-stagger data-program-list class="m-0 grid list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          programs.map((p) => (
+            <li data-category={p.data.category}>
+              <ProgramCard program={p} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="who-title" class="px-4 py-16 sm:px-6">
+    <div class="mx-auto max-w-[1100px]">
+      <SectionHeading id="who-title" class="mb-8">Who it's for</SectionHeading>
+      <ul data-reveal-stagger class="m-0 grid list-none gap-4 p-0 md:grid-cols-2">
+        {
+          audiences.map((a, i) => (
+            <li class="flex gap-4 rounded-[18px] border border-line bg-surface p-6">
+              <span aria-hidden="true" class="pt-1 font-mono text-sm text-accent-text">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div>
+                <h3 class="m-0 text-lg font-semibold">{a.title}</h3>
+                <p class="mt-1.5 mb-0 leading-relaxed text-muted">{a.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Testimonials testimonials={testimonials.filter((t) => t.data.services.includes(SERVICE_ID))} title="From our trainees" />
+
+  <section aria-label="Training enquiries and questions" class="px-4 py-16 pb-24 sm:px-6">
+    <div class="mx-auto flex max-w-[1100px] flex-wrap gap-8">
+      <ConsultCard selected={SERVICE_ID} class="min-w-0 flex-[1_1_380px]" />
+      <div id="faq" class="min-w-0 flex-[1.4_1_440px]">
+        <h2 class="heading-serif m-0 mb-5 text-[32px]">Frequently asked</h2>
+        <FaqList faqs={faqs.filter((f) => ['training', 'startups', 'get-started'].includes(f.id))} />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { onPageLoad } from '@/scripts/lifecycle';
+
+  onPageLoad((signal) => {
+    const bar = document.querySelector<HTMLElement>('[data-filters]');
+    const items = [...document.querySelectorAll<HTMLElement>('[data-program-list] > li')];
+    const count = document.querySelector('[data-filter-count]');
+    if (!bar || !items.length) return;
+    bar.hidden = false;
+    const buttons = [...bar.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+    const apply = (category: string) => {
+      let shown = 0;
+      for (const li of items) {
+        const match = !category || li.dataset.category === category;
+        li.hidden = !match;
+        if (match) shown++;
+      }
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === category)));
+      if (count) count.textContent = `${shown} ${shown === 1 ? 'program' : 'programs'}${category ? ` in ${category}` : ''}`;
+    };
+    buttons.forEach((b) => b.addEventListener('click', () => apply(b.dataset.filter ?? ''), { signal }));
+  });
+</script>

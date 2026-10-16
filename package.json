@@ -1,0 +1,35 @@
+{
+  "name": "daybytes-website",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node scripts/check-public-emails.mjs && node scripts/check-page-placeholders.mjs && astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/cloudflare": "^14.3.4",
+    "@astrojs/react": "^7.0.1",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@react-three/fiber": "^9.8.1",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.186.0",
+    "astro": "^7.3.8",
+    "motion": "^14.1.0",
+    "react": "~19.3.0",
+    "react-dom": "~19.3.0",
+    "tailwindcss": "^4.3.3",
+    "three": "^0.186.1",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.149.0"
+  }
+}

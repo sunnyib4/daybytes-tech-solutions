@@ -1,0 +1,23 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { service: CollectionEntry<'services'>; headingLevel?: 'h2' | 'h3' }
+const { service, headingLevel: Heading = 'h3' } = Astro.props;
+const { title, code, tag, summary } = service.data;
+---
+
+<a
+  href={`/services/${service.id}`}
+  class="group flex items-center gap-4 rounded-[14px] border border-line bg-surface px-4 py-[18px] text-ink no-underline transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[0_14px_34px_rgba(0,0,0,.1)] sm:gap-5 sm:px-5"
+>
+  <div aria-hidden="true" class="flex size-14 shrink-0 items-center justify-center rounded-[10px] bg-tile font-mono text-lg text-accent sm:size-[72px] sm:text-[22px]">
+    {code}
+  </div>
+  <div class="min-w-0 flex-auto">
+    <Heading class="heading-serif m-0 text-lg sm:text-xl">{title}</Heading>
+    <span class="mt-1.5 inline-block rounded-md bg-tag-bg px-2 py-[3px] font-mono text-xs text-tag-ink">{tag}</span>
+    <p class="mt-2 mb-0 text-[15px] leading-normal text-muted">{summary}</p>
+  </div>
+  <svg class="size-[22px] shrink-0 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+    <path d="M5 12h14M13 6l6 6-6 6"></path>
+  </svg>
+</a>

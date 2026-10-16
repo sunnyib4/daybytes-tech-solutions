@@ -1,0 +1,63 @@
+---
+/**
+ * Formspree form with inline validation and an on-page success message
+ * (behaviour in src/scripts/forms.ts). Falls back to a normal POST without JS.
+ */
+import { site } from '@/data/site';
+
+interface Props {
+  id: string;
+  form: 'contact' | 'training' | 'careers';
+  subject: string;
+  submitLabel: string;
+  success: string;
+  /** Pipe-separated groups where at least one field must be filled, e.g. "cv,cv_link". */
+  requireOne?: string;
+  class?: string;
+}
+const { id, form, subject, submitLabel, success, requireOne, class: className } = Astro.props;
+const action = site.forms[form];
+---
+
+<p class="m-0 mb-7 text-muted">
+  Fields marked <span aria-hidden="true">*</span><span class="sr-only">with an asterisk</span> are required.
+</p>
+<form
+  id={id}
+  action={action}
+  method="POST"
+  enctype="multipart/form-data"
+  novalidate
+  data-ajax-form
+  data-form-kind={form}
+  data-success={success}
+  data-require-one={requireOne}
+  class:list={['grid gap-5 sm:grid-cols-2', className]}
+>
+  <slot />
+  <!-- Spam honeypot: hidden from people, filled in by bots. -->
+  <div class="hidden" aria-hidden="true">
+    <label for={`${id}-gotcha`}>Leave this empty</label>
+    <input id={`${id}-gotcha`} type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+  </div>
+  <input type="hidden" name="_subject" value={subject} />
+  <input type="hidden" name="form_name" value={form} />
+  <div class="sm:col-span-2">
+    <label class="flex items-start gap-3 rounded-[10px] border border-line bg-canvas p-3 text-sm leading-relaxed text-body">
+      <input type="checkbox" name="consent" required class="mt-1 size-4 accent-accent" />
+      <span>
+        I agree to the <a href="/privacy" class="link">Privacy Policy</a> and understand my details will be used only to respond to this enquiry.
+      </span>
+    </label>
+  </div>
+  <div class="flex flex-wrap items-center gap-4 sm:col-span-2">
+    <button type="submit" class="btn-accent cursor-pointer border-0 px-7 py-4 font-sans text-base disabled:cursor-wait disabled:opacity-70">
+      {submitLabel}
+    </button>
+    <p data-form-status role="status" aria-live="polite" class="m-0 text-[15px]"></p>
+  </div>
+</form>
+
+<script>
+  import '@/scripts/forms';
+</script>

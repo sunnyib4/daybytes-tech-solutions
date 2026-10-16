@@ -1,0 +1,33 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import { site } from '@/data/site';
+---
+<!-- Internal draft for lawyer review only. -->
+<BaseLayout title="Terms & Conditions" description="Draft terms for using the Daybytes Tech Solutions website and requesting services. Pending business confirmation and legal review." noindex overlayHeader>
+  <PageHero eyebrow="Legal" title="Terms & Conditions" intro="This page is a draft for legal review before launch." breadcrumbs={[{ label: 'Terms & Conditions', href: '/terms' }]} />
+
+  <section class="mx-auto max-w-[760px] px-4 py-16 sm:px-6">
+    <div class="prose prose-lg max-w-none">
+      <p><strong>Draft:</strong> This is a working draft and should be reviewed by a lawyer before publication.</p>
+      <p>These terms govern your use of the Daybytes Tech Solutions website and any services requested through it.</p>
+      <h2>Services</h2>
+      <p>We provide IT support, software and web development, business optimization, training, and related technical services. Scope, pricing, timelines, and responsibilities are set out in the relevant proposal, statement of work, or booking confirmation.</p>
+      <h2>Consultations and bookings</h2>
+      <p>Free consultations and paid bookings are subject to the scheduling tool, our availability, and our confirmation. We may change or cancel appointments with reasonable notice.</p>
+      <p>For free bookings, provide at least 48 hours’ notice to reschedule without charge, subject to availability. With less than 48 hours’ notice, a reasonable, previously disclosed cancellation fee may apply. A reasonable, disclosed no-show charge may apply where legally permitted. If Daybytes cancels, it will offer a replacement appointment or an appropriate refund for the undelivered service.</p>
+      <p>The proposed project deposit is 50%. Proposed payment methods to advertise are bank transfer and Visa, Verve, and Mastercard payments. International card payments are also proposed, subject to verification that the enabled provider supports them. Confirm actual payment capabilities before publishing payment claims. The project proposal, invoice, service agreement, and training checkout should disclose service-specific terms before payment.</p>
+      <p><strong>[TO CONFIRM]</strong> Confirm which enabled card-payment provider is used and whether it accepts international cards before advertising international card payments.</p>
+      <h2>Acceptable use</h2>
+      <p>You agree not to misuse the website, attempt to interfere with our systems, or submit unlawful, harmful, or abusive content.</p>
+      <h2>Intellectual property</h2>
+      <p>We retain ownership of our tools, templates, and general business materials unless otherwise agreed in writing. Client content and business data remain the property of the client where applicable.</p>
+      <h2>Limitation of liability</h2>
+      <p>We are not liable for indirect, special, or consequential damage arising from the use of the site or our services, except where law does not allow that limitation.</p>
+      <h2>Governing law</h2>
+      <p>These terms are governed by Nigerian law, and disputes are subject to the courts of Nigeria, subject to review for applicable legal compliance.</p>
+      <h2>Contact</h2>
+      <p>{site.legalName}<br /><a href={`mailto:${site.email}`}>{site.email}</a><br /><a href={site.phone.href}>{site.phone.display}</a></p>
+    </div>
+  </section>
+</BaseLayout>

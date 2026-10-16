@@ -1,0 +1,23 @@
+---
+// Top section for inner pages. Same soft grey-to-orange language as the
+// homepage hero, kept shorter so content starts above the fold.
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro';
+
+interface Props {
+  title: string;
+  eyebrow?: string;
+  intro?: string;
+  breadcrumbs?: { label: string; href: string }[];
+}
+const { title, eyebrow, intro, breadcrumbs } = Astro.props;
+---
+
+<section class="relative bg-[image:var(--page-gradient)] px-4 pt-[124px] pb-14 sm:px-6 lg:pt-[148px] lg:pb-20">
+  <div class="mx-auto max-w-[1100px]">
+    {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
+    {eyebrow && <p class="label-mono m-0 mb-4 text-[13px] text-subtle">{eyebrow}</p>}
+    <h1 class="m-0 max-w-[880px] text-[40px] leading-[1.06] font-medium tracking-[-0.035em] text-balance sm:text-[52px] lg:text-[60px]">{title}</h1>
+    {intro && <p class="mt-6 mb-0 max-w-[680px] text-lg leading-normal text-body sm:text-xl">{intro}</p>}
+    <slot />
+  </div>
+</section>

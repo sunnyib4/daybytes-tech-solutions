@@ -1,0 +1,73 @@
+---
+import { site } from '@/data/site';
+import { getServices } from '@/lib/content';
+import Logo from './Logo.astro';
+
+const services = await getServices();
+const company = [
+  { label: 'About', href: '/about' },
+  { label: 'Services', href: '/services' },
+  { label: 'Projects', href: '/projects' },
+  { label: 'Training', href: '/training' },
+  { label: 'Careers', href: '/careers' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Contact', href: '/contact' },
+];
+const linkClass = 'text-[#D6D0C9] no-underline hover:text-white hover:underline underline-offset-4';
+const headingClass = 'm-0 mb-1 font-mono text-xs tracking-[.08em] text-white';
+---
+
+<footer class="bg-[linear-gradient(180deg,#1A1714_0%,#1A1714_55%,#3A2015_80%,#7A3410_100%)] px-4 pt-16 text-[#D6D0C9] sm:px-6">
+  <div class="mx-auto max-w-[1200px]">
+    <a href="/" class="mb-12 inline-flex items-center gap-3 text-white no-underline">
+      <Logo variant="onDark" size={40} />
+      <span aria-hidden="true" class="text-[28px] font-medium tracking-[-0.03em]">Daybytes</span>
+      <span class="sr-only">home</span>
+    </a>
+    <div class="grid grid-cols-2 gap-8 text-sm md:grid-cols-4">
+      <div class="flex flex-col gap-2.5">
+        <h2 class={headingClass}>SERVICES</h2>
+        {services.map((s) => <a href={`/services/${s.id}`} class={linkClass}>{s.data.title}</a>)}
+      </div>
+      <div class="flex flex-col gap-2.5">
+        <h2 class={headingClass}>COMPANY</h2>
+        {company.map((l) => <a href={l.href} class={linkClass}>{l.label}</a>)}
+      </div>
+      <div class="flex flex-col gap-2.5">
+        <h2 class={headingClass}>CONTACT</h2>
+        <a href={site.phone.href} target="_blank" rel="noopener noreferrer" class={linkClass}>{site.phone.display}</a>
+        <a href={`mailto:${site.email}`} target="_blank" rel="noopener noreferrer" class={linkClass}>{site.email}</a>
+        <a href={site.calendly} target="_blank" rel="noopener noreferrer" class={linkClass}>Book a free call</a>
+        <p class="m-0 leading-relaxed">{site.address.locality}, {site.address.region}</p>
+      </div>
+      <div class="flex flex-col gap-2.5">
+        <h2 class={headingClass}>CONNECT</h2>
+        {site.socials.map((s) => <a href={s.href} target="_blank" rel="me noopener noreferrer" class={linkClass}>{s.label}</a>)}
+      </div>
+    </div>
+    <div class="mt-14 flex flex-wrap justify-between gap-3 text-[13px] text-[#B5ADA5]">
+      <span>Lagos, Nigeria · serving clients worldwide</span>
+      <span>© {new Date().getFullYear()} {site.name}. All rights reserved.</span>
+    </div>
+    <div class="mt-5 flex flex-wrap items-center gap-3 text-[12px] text-[#D6D0C9] underline-offset-4">
+      <a href="/privacy" class="hover:text-white hover:underline">Privacy Policy</a>
+      <a href="/cookie-policy" class="hover:text-white hover:underline">Cookie Policy</a>
+      <a href="/terms" class="hover:text-white hover:underline">Terms &amp; Conditions</a>
+      <a href="/refund-policy" class="hover:text-white hover:underline">Refund Policy</a>
+    </div>
+    <div class="mt-4 rounded-lg border border-white/10 bg-white/5 p-3 text-[12px] leading-relaxed text-[#F2EEE9]">
+      <div><strong>Registered business name:</strong> {site.legalName}</div>
+      <div><strong>RC number:</strong> {site.rcNumber}</div>
+      <div><strong>Office:</strong> {site.address.street}, {site.address.locality}, {site.address.region}</div>
+      <div><strong>Email:</strong> <a href={`mailto:${site.email}`} class="text-white underline-offset-4 hover:underline">{site.email}</a></div>
+      <div><strong>Phone:</strong> <a href={site.phone.href} class="text-white underline-offset-4 hover:underline">{site.phone.display}</a></div>
+      <div><strong>Hours:</strong> {site.hours.map((h) => `${h.label}: ${h.value}`).join(' · ')}</div>
+    </div>
+    <p
+      aria-hidden="true"
+      class="mt-6 mb-[-0.22em] text-center font-serif text-[clamp(96px,19vw,280px)] leading-none font-bold tracking-[-0.04em] whitespace-nowrap text-white/[.06] select-none [-webkit-text-stroke:1px_rgba(255,255,255,.18)]"
+    >
+      Daybytes
+    </p>
+  </div>
+</footer>

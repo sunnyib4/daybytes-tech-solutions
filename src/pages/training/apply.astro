@@ -1,0 +1,104 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import AjaxForm from '@/components/forms/AjaxForm.astro';
+import Field from '@/components/forms/Field.astro';
+import { site } from '@/data/site';
+import { getPrograms } from '@/lib/content';
+
+const programs = await getPrograms();
+---
+
+<BaseLayout
+  title="Apply for Training"
+  description="Apply or enrol for a Daybytes training program in web development, AI automations, virtual assistance, IT support or productivity tools."
+  overlayHeader
+>
+  <PageHero
+    eyebrow="Training"
+    title="Apply or enrol"
+    intro="Tell us which program you're interested in and a little about yourself. We'll get back to you with dates, format and pricing."
+    breadcrumbs={[
+      { label: 'Training', href: '/training' },
+      { label: 'Apply', href: '/training/apply' },
+    ]}
+  />
+
+  <section aria-label="Application form" class="px-4 pt-6 pb-24 sm:px-6">
+    <div class="mx-auto grid max-w-[1100px] grid-cols-[minmax(0,1fr)] items-start gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      <div class="rounded-[18px] border border-line bg-surface p-6 sm:p-9">
+        <h2 class="heading-serif m-0 mb-2 text-[28px]">Your application</h2>
+        <AjaxForm
+          id="training-form"
+          form="training"
+          subject="New training application: daybytes.com"
+          submitLabel="Send application"
+          success="Thanks. Your application is in. We'll be in touch with next steps."
+        >
+          <Field
+            id="program"
+            label="Program"
+            type="select"
+            required
+            prefill="program"
+            wide
+            placeholderOption="Choose a program"
+            options={[...programs.map((p) => ({ value: p.id, label: `${p.data.title} · ${p.data.category}` })), { value: 'not-sure', label: 'Not sure yet, help me choose' }]}
+            error="Please choose a program."
+          />
+          <Field id="t-name" name="name" label="Full name" autocomplete="name" required error="Please enter your name." />
+          <Field id="t-email" name="email" label="Email" type="email" autocomplete="email" required error="Please enter a valid email address." />
+          <Field id="t-phone" name="phone" label="Phone or WhatsApp" type="tel" autocomplete="tel" />
+          <Field
+            id="as"
+            label="Applying as"
+            type="select"
+            prefill="as"
+            options={[
+              { value: 'individual', label: 'An individual' },
+              { value: 'team', label: 'A team / organisation' },
+            ]}
+          />
+          <Field
+            id="format"
+            label="Preferred format"
+            type="select"
+            options={[
+              { value: 'no-preference', label: 'No preference' },
+              { value: 'online', label: 'Online' },
+              { value: 'in-person', label: 'In person (Lagos)' },
+              { value: 'hybrid', label: 'Hybrid' },
+            ]}
+          />
+          <Field
+            id="experience"
+            label="Your experience with this topic"
+            type="select"
+            options={[
+              { value: 'none', label: 'Complete beginner' },
+              { value: 'some', label: 'Some experience' },
+              { value: 'experienced', label: 'Experienced, looking to level up' },
+            ]}
+          />
+          <Field id="t-message" name="message" label="Anything else we should know?" type="textarea" rows={5} wide hint="Your goals, availability, or for teams: how many people." />
+        </AjaxForm>
+      </div>
+
+      <aside class="flex flex-col gap-4">
+        <div class="rounded-[18px] bg-[#1A1714] p-7 text-[#F4F3F1] sm:p-8 dark:bg-surface dark:ring-1 dark:ring-line">
+          <h2 class="heading-serif m-0 mb-4 text-2xl">What happens next</h2>
+          <ol class="m-0 flex list-none flex-col gap-4 p-0 text-[15px] leading-relaxed">
+            <li class="flex gap-3"><span class="font-mono text-sm text-accent">01</span> We review your application and reply by email or WhatsApp.</li>
+            <li class="flex gap-3"><span class="font-mono text-sm text-accent">02</span> We confirm the format, schedule and fees for your program.</li>
+            <li class="flex gap-3"><span class="font-mono text-sm text-accent">03</span> You secure your place and get everything you need to start.</li>
+          </ol>
+        </div>
+        <div class="rounded-[18px] border border-line bg-surface p-7 sm:p-8">
+          <h2 class="heading-serif m-0 mb-2 text-2xl">Questions first?</h2>
+          <p class="m-0 mb-5 leading-relaxed text-muted">Call {site.phone.display} or book a free call and we'll help you choose.</p>
+          <a href={site.calendly} class="btn-accent w-full px-6 py-4">Book a free call</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

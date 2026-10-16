@@ -1,0 +1,43 @@
+---
+import AjaxForm from '@/components/forms/AjaxForm.astro';
+import Field from '@/components/forms/Field.astro';
+
+interface Props {
+  roles: { value: string; label: string }[];
+  selected?: string;
+  id?: string;
+}
+const { roles, selected, id = 'job-form' } = Astro.props;
+const options = [...roles, { value: 'general', label: 'General application (no specific role)' }].map((o) => ({
+  ...o,
+  selected: o.value === (selected ?? (roles.length ? undefined : 'general')),
+}));
+---
+
+<AjaxForm
+  id={id}
+  form="careers"
+  subject="New job application: daybytes.com"
+  submitLabel="Send application"
+  success="Thanks. Your application is in. We'll be in touch if there's a fit."
+  requireOne="cv,cv_link"
+>
+  <Field id={`${id}-name`} name="name" label="Full name" autocomplete="name" required error="Please enter your name." />
+  <Field id={`${id}-email`} name="email" label="Email" type="email" autocomplete="email" required error="Please enter a valid email address." />
+  <Field id={`${id}-phone`} name="phone" label="Phone or WhatsApp" type="tel" autocomplete="tel" />
+  <Field id={`${id}-role`} name="role" label="Role" type="select" required prefill="role" options={options} error="Please choose a role." />
+  <Field
+    id={`${id}-cv`}
+    name="cv"
+    label="Upload your CV"
+    type="file"
+    accept=".pdf,.doc,.docx"
+    maxMb={10}
+    hint="PDF or Word, up to 10 MB. Or paste a link below."
+    error="That file is too large. Please keep it under 10 MB or use a link instead."
+  />
+  <Field id={`${id}-cv-link`} name="cv_link" label="Or link to your CV" type="url" hint="Google Drive, Dropbox, LinkedIn…" error="Please enter a full link, starting with https://" />
+  <p data-group-error="cv,cv_link" hidden class="m-0 -mt-2 text-sm text-[#B42318] sm:col-span-2 dark:text-[#FF8A80]">Please upload your CV or add a link to it.</p>
+  <Field id={`${id}-portfolio`} name="portfolio" label="Portfolio or GitHub" type="url" wide error="Please enter a full link, starting with https://" />
+  <Field id={`${id}-note`} name="cover_note" label="Cover note" type="textarea" rows={6} wide required hint="Why Daybytes, and why this role? A few sentences is fine." error="Please add a short cover note." />
+</AjaxForm>
