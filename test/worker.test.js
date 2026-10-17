@@ -113,6 +113,25 @@ test('config endpoint returns public key and signed form start proof', async () 
   assert.equal(await signStartedAt(payload.startedAt, env.TURNSTILE_SECRET_KEY), payload.startedProof);
 });
 
+test('missing form configuration logs variable names only and keeps API error generic', async () => {
+  const errors = [];
+  const originalError = console.error;
+  console.error = (...values) => errors.push(values.join(' '));
+  try {
+    const incompleteEnv = { ...env, TURNSTILE_SITE_KEY: undefined, TURNSTILE_SECRET_KEY: undefined };
+    const response = await worker.fetch(new Request('https://daybytes.com/api/config?formType=contact'), incompleteEnv);
+    const body = await response.json();
+    assert.equal(response.status, 503);
+    assert.deepEqual(body, { error: 'Form security is not configured' });
+    assert.ok(errors.some((message) => message.includes('TURNSTILE_SITE_KEY')));
+    assert.ok(errors.some((message) => message.includes('TURNSTILE_SECRET_KEY')));
+    assert.doesNotMatch(errors.join(' '), /public-site-key|test-secret/);
+    assert.doesNotMatch(JSON.stringify(body), /TURNSTILE_SITE_KEY|TURNSTILE_SECRET_KEY/);
+  } finally {
+    console.error = originalError;
+  }
+});
+
 test('contact, training, and careers forms all return success in console mode', async () => {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = turnstileFetch;

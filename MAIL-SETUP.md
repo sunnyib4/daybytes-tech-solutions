@@ -24,14 +24,13 @@ All application values below are read at Worker runtime. None are read at build 
 
 `ASSETS` and `FORM_RATE_LIMITER` are Cloudflare Worker bindings, not application variables. `ASSETS` is required to serve static files. `FORM_RATE_LIMITER` is configured by `wrangler.jsonc` and is required for production submissions; local development uses the in-memory limiter instead.
 
-## Cloudflare Dashboard
+## Cloudflare Configuration and Dashboard
 
-In Workers & Pages → `daybytes-tech-solutions` → Settings → Variables and Secrets:
+`MAIL_PROVIDER`, `TURNSTILE_SITE_KEY`, `BREVO_SENDER_EMAIL`, and the three `BREVO_*_TO` recipient values are non-secret and are defined in `wrangler.jsonc` under `vars`; edit that file to change them.
 
-- Public values go in Settings → Variables and Secrets as plain variables.
-- Private values (API keys, `TURNSTILE_SECRET_KEY`, `WEBHOOK_SECRET`) go in as secrets. Secrets must never go in Cloudflare "Build variables".
-- Add only the secret for the selected mail provider, plus the Turnstile secret. Do not add real credentials to any repository file.
-- Set `MAIL_PROVIDER` to the selected provider. Do not set production `ENVIRONMENT=development`.
+- `wrangler.jsonc` currently has `keep_vars: true` so any remaining dashboard-defined plain variables are preserved during deploy. This can leave stale dashboard values in place; remove `keep_vars` once dashboard settings have been reconciled into `wrangler.jsonc`.
+- Private values (`BREVO_API_KEY`, `TURNSTILE_SECRET_KEY`, and any selected alternative provider secrets) belong only in Settings → Variables and Secrets as encrypted secrets. Never put secrets in Cloudflare "Build variables" or the repository.
+- `ENVIRONMENT` is omitted from production config; do not set it to `development` in production.
 - Add the Turnstile hostname for `daybytes.com` in Cloudflare Turnstile; include `www.daybytes.com` if it is configured as a Turnstile hostname.
 
 ## Provider Behavior

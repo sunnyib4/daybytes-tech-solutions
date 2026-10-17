@@ -2,6 +2,12 @@ import { signStartedAt, validateSubmission, verifyTurnstile } from './lib/worker
 import { sendSubmission } from './lib/worker/mail.js';
 
 const localBuckets = new Map();
+const reportedMissingConfigurations = new Set();
+const MAIL_SECRET_BY_PROVIDER = {
+  brevo: 'BREVO_API_KEY',
+  resend: 'RESEND_API_KEY',
+  webhook: 'WEBHOOK_SECRET',
+};
 const SECURITY_HEADERS = {
   'Content-Security-Policy': "default-src 'self'; base-uri 'self'; form-action 'self' https://*.calendly.com; frame-ancestors 'none'; object-src 'none'; frame-src 'self' https://*.calendly.com https://challenges.cloudflare.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' https://*.calendly.com https://challenges.cloudflare.com; connect-src 'self' https://api.brevo.com https://api.resend.com https://*.calendly.com https://challenges.cloudflare.com; media-src 'self'; worker-src 'self' blob:;",
   'X-Content-Type-Options': 'nosniff',
@@ -20,6 +26,23 @@ const json = (body, status = 200, headers = {}) =>
   });
 
 const isWorkersDev = (hostname) => hostname.endsWith('.workers.dev');
+
+function logMissingConfiguration(env) {
+  const required = ['MAIL_PROVIDER', 'TURNSTILE_SITE_KEY', 'TURNSTILE_SECRET_KEY'];
+  const mailSecret = MAIL_SECRET_BY_PROVIDER[env.MAIL_PROVIDER];
+  if (mailSecret) required.push(mailSecret);
+
+  const missing = required.filter((name) => !env[name]);
+  if (!missing.length) return missing;
+
+  const signature = missing.join(',');
+  if (!reportedMissingConfigurations.has(signature)) {
+    console.error(`Worker configuration is missing required variables: ${missing.join(', ')}`);
+    reportedMissingConfigurations.add(signature);
+  }
+  return missing;
+}
+
 const addHostRobotsHeader = (response, workersDev) => {
   const headers = new Headers(response.headers);
   if (workersDev) headers.set('X-Robots-Tag', 'noindex, nofollow');
@@ -81,6 +104,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const workerHost = isWorkersDev(url.hostname);
+    logMissingConfiguration(env);
 
     if (url.hostname === 'www.daybytes.com') {
       const canonical = new URL(url);
