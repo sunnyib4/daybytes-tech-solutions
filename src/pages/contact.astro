@@ -100,12 +100,15 @@ const faqSchema = {
       <p class="m-0 mb-6 text-muted">
         Calendar not loading? <a href={site.calendly} class="link">Open the booking page on Calendly</a>.
       </p>
-      <iframe
-        src={`${site.calendly}?hide_gdpr_banner=1&embed_type=Inline&embed_domain=daybytes.com`}
-        title="Book a free call with Daybytes on Calendly"
-        loading="lazy"
-        class="block h-[720px] w-full rounded-[18px] border border-line bg-surface"
-      ></iframe>
+      <button
+        type="button"
+        data-calendly-load
+        aria-controls="calendly-embed"
+        class="btn-accent px-6 py-4"
+      >
+        Book a free call
+      </button>
+      <div id="calendly-embed" class="mt-6"></div>
     </div>
   </section>
 
@@ -116,3 +119,24 @@ const faqSchema = {
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  import { onPageLoad } from '@/scripts/lifecycle';
+
+  onPageLoad((signal) => {
+    const button = document.querySelector<HTMLButtonElement>('[data-calendly-load]');
+    const container = document.getElementById('calendly-embed');
+    if (!button || !container) return;
+
+    button.addEventListener('click', () => {
+      if (container.querySelector('iframe')) return;
+      const frame = document.createElement('iframe');
+      frame.src = 'https://calendly.com/daybytestechsolutions?hide_gdpr_banner=1&embed_type=Inline&embed_domain=daybytes.com';
+      frame.title = 'Book a free call with Daybytes on Calendly';
+      frame.loading = 'lazy';
+      frame.className = 'block h-[720px] w-full rounded-[18px] border border-line bg-surface';
+      container.append(frame);
+      button.hidden = true;
+    }, { signal });
+  });
+</script>

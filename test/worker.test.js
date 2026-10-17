@@ -50,9 +50,13 @@ const requestWorker = (url, init = {}) => worker.fetch(new Request(url, {
 
 test('serves static pages through ASSETS with baseline security headers', async () => {
   const response = await worker.fetch(new Request('https://daybytes.com/about/'), env);
+  const csp = response.headers.get('Content-Security-Policy');
   assert.equal(await response.text(), 'asset:/about/');
   assert.equal(response.headers.get('X-Content-Type-Options'), 'nosniff');
-  assert.equal(response.headers.get('Content-Security-Policy').includes('challenges.cloudflare.com'), true);
+  assert.match(csp, /frame-src 'self' https:\/\/calendly\.com https:\/\/challenges\.cloudflare\.com/);
+  assert.match(csp, /script-src 'self' 'unsafe-inline' https:\/\/assets\.calendly\.com https:\/\/challenges\.cloudflare\.com/);
+  assert.match(csp, /connect-src 'self'.*https:\/\/calendly\.com https:\/\/assets\.calendly\.com https:\/\/challenges\.cloudflare\.com/);
+  assert.doesNotMatch(csp, /\*|unsafe-eval/);
   assert.equal(response.headers.get('X-Robots-Tag'), null);
 });
 
