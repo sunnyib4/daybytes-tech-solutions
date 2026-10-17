@@ -50,7 +50,10 @@ const action = site.forms[form];
       </span>
     </label>
   </div>
-  <div data-turnstile class="sm:col-span-2" aria-label="Security verification"></div>
+  <div class="sm:col-span-2">
+    <p class="m-0 mb-2 text-sm text-body">Security verification (required)</p>
+    <div data-turnstile></div>
+  </div>
   <input type="hidden" name="started_at" />
   <input type="hidden" name="started_proof" />
   <div class="flex flex-wrap items-center gap-4 sm:col-span-2">

@@ -73,12 +73,25 @@ function initForm(form: HTMLFormElement, signal: AbortSignal) {
       if (signal.aborted || !turnstileContainer || !window.turnstile) return;
       widgetId = window.turnstile.render(turnstileContainer, {
         sitekey: config.siteKey,
-        callback: (token) => { tokenInput.value = token; },
-        'expired-callback': () => { tokenInput.value = ''; },
-        'error-callback': () => { tokenInput.value = ''; if (status) status.textContent = 'Security verification failed. Please try again.'; },
+        callback: (token) => {
+          tokenInput.value = token;
+          securityReady = true;
+          if (button) button.disabled = false;
+          if (status) status.textContent = '';
+        },
+        'expired-callback': () => {
+          tokenInput.value = '';
+          securityReady = false;
+          if (button) button.disabled = true;
+          if (status) status.textContent = 'Security verification expired. Please verify again.';
+        },
+        'error-callback': () => {
+          tokenInput.value = '';
+          securityReady = false;
+          if (button) button.disabled = true;
+          if (status) status.textContent = 'Security verification failed. Please try again.';
+        },
       });
-      securityReady = true;
-      if (button) button.disabled = false;
     } catch {
       if (status) status.textContent = 'The form could not load security verification. Please refresh and try again.';
     }
