@@ -307,14 +307,17 @@ function usePrefersReducedMotion() {
 
 export default function HeroSphere() {
   const reduced = usePrefersReducedMotion();
-  const [webgl] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return supportsWebGL();
-  });
+  const [webgl, setWebgl] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const wrapper = useRef<HTMLDivElement>(null);
   const pointer = useRef({ x: 0, y: 0 });
   const [onScreen, setOnScreen] = useState(true);
   const [tabVisible, setTabVisible] = useState(true);
+
+  useEffect(() => {
+    setHydrated(true);
+    setWebgl(supportsWebGL());
+  }, []);
 
   // Pause rendering while the hero is scrolled away or the tab is hidden.
   useEffect(() => {
@@ -345,7 +348,7 @@ export default function HeroSphere() {
     return () => host()?.removeAttribute('data-sphere-live');
   }, [reduced, webgl]);
 
-  if (reduced || !webgl) return null;
+  if (!hydrated || reduced || !webgl) return null;
 
   return (
     <div ref={wrapper} className="absolute inset-0" aria-hidden="true">
