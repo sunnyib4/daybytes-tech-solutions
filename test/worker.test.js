@@ -150,6 +150,18 @@ test('configured form bindings do not emit a missing-configuration diagnostic', 
   }
 });
 
+test('submission fails with a clear config error when the selected mail provider secret is missing', async () => {
+  const request = new Request('https://daybytes.com/api/submit', { method: 'POST', body: await formFor('contact') });
+  const response = await worker.fetch(request, {
+    ...env,
+    MAIL_PROVIDER: 'brevo',
+    BREVO_API_KEY: undefined,
+  });
+
+  assert.equal(response.status, 503);
+  assert.match((await response.json()).error, /mail provider|configured|BREVO_API_KEY/i);
+});
+
 test('contact, training, and careers forms all return success in console mode', async () => {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = turnstileFetch;

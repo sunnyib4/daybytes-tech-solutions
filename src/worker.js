@@ -27,6 +27,23 @@ const json = (body, status = 200, headers = {}) =>
 
 const isWorkersDev = (hostname) => hostname.endsWith('.workers.dev');
 
+function missingConfigurationMessage(env) {
+  const provider = env.MAIL_PROVIDER;
+  if (provider === 'console' && env.ENVIRONMENT === 'development') return null;
+  if (!provider) return 'Form delivery is not configured: MAIL_PROVIDER is missing.';
+  if (!['console', 'brevo', 'resend', 'formspree', 'webhook'].includes(provider)) {
+    return `Form delivery is not configured: unsupported MAIL_PROVIDER "${provider}".`;
+  }
+  const requiredSecret = MAIL_SECRET_BY_PROVIDER[provider];
+  if (requiredSecret && !env[requiredSecret]) {
+    return `Form delivery is not configured: ${requiredSecret} is missing for MAIL_PROVIDER=${provider}.`;
+  }
+  if (!env.TURNSTILE_SITE_KEY || !env.TURNSTILE_SECRET_KEY) {
+    return 'Form security is not configured: TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY are required.';
+  }
+  return null;
+}
+
 function logMissingConfiguration(env) {
   const required = ['MAIL_PROVIDER', 'TURNSTILE_SITE_KEY', 'TURNSTILE_SECRET_KEY'];
   const mailSecret = MAIL_SECRET_BY_PROVIDER[env.MAIL_PROVIDER];
@@ -76,6 +93,10 @@ function robotsDisallowResponse() {
 async function postSubmission(request, env) {
   if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405, { Allow: 'POST' });
   if (!request.headers.get('content-type')?.toLowerCase().startsWith('multipart/form-data')) return json({ error: 'Expected multipart form data' }, 400);
+
+  const configError = missingConfigurationMessage(env);
+  if (configError) return json({ error: configError }, 503);
+
   const parsed = await validateSubmission(request, env);
   if (!parsed.ok) return json({ error: parsed.error, field: parsed.field }, parsed.status);
   if (parsed.data._gotcha) return json({ error: 'Submission rejected' }, 400);
