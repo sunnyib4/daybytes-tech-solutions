@@ -3,7 +3,10 @@ import path from 'node:path';
 
 const root = process.cwd();
 const siteSource = await readFile(path.join(root, 'src/data/site.ts'), 'utf8');
-const publicEmail = siteSource.match(/\bemail:\s*'([^']+)'/)?.[1];
+const publicEmail = siteSource.match(/\bemail:\s*'([^']+)'/)?.[1]
+  ?? (siteSource.includes('PUBLIC_EMAIL')
+    ? (await readFile(path.join(root, 'src/lib/public-contact.js'), 'utf8')).match(/PUBLIC_EMAIL\s*=\s*'([^']+)'/)?.[1]
+    : undefined);
 
 if (!publicEmail) {
   console.error('Contact check failed: site.email could not be read from src/data/site.ts.');

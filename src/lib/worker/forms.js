@@ -116,7 +116,7 @@ export async function isValidStartedAt(startedAt, proof, secret, now = Date.now(
   return difference === 0;
 }
 
-export async function verifyTurnstile(token, secret, remoteIp, fetchImpl = fetch) {
+export async function verifyTurnstile(token, secret, remoteIp, fetchImpl = fetch, expectedHostname) {
   if (!token || !secret) return false;
   const body = new URLSearchParams({ secret, response: token });
   if (remoteIp) body.set('remoteip', remoteIp);
@@ -127,7 +127,7 @@ export async function verifyTurnstile(token, secret, remoteIp, fetchImpl = fetch
   });
   if (!response.ok) return false;
   const result = await response.json().catch(() => null);
-  return result?.success === true;
+  return result?.success === true && (!expectedHostname || result.hostname === expectedHostname);
 }
 
 export async function validateSubmission(request, env, now = Date.now()) {

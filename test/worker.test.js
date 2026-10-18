@@ -42,7 +42,7 @@ const formFor = async (formType) => {
 };
 
 const turnstileFetch = async (url) => String(url).includes('siteverify')
-  ? Response.json({ success: true })
+  ? Response.json({ success: true, hostname: 'daybytes.com' })
   : Promise.reject(new Error(`Unexpected upstream request ${url}`));
 
 const requestWorker = (url, init = {}) => worker.fetch(new Request(url, {
@@ -96,12 +96,12 @@ test('www redirects preserve the full path and query string', async () => {
 });
 
 test('workers.dev gets disallow-all robots and noindex on API and asset responses', async () => {
-  const robots = await worker.fetch(new Request('https://daybytes-tech-solutions.workers.dev/robots.txt'), env);
+  const robots = await worker.fetch(new Request('https://daybytes-tech-solutions.daybytestech.workers.dev/robots.txt'), env);
   assert.equal(await robots.text(), 'User-agent: *\nDisallow: /\n');
   assert.equal(robots.headers.get('X-Robots-Tag'), 'noindex, nofollow');
-  const asset = await worker.fetch(new Request('https://daybytes-tech-solutions.workers.dev/about/'), env);
+  const asset = await worker.fetch(new Request('https://daybytes-tech-solutions.daybytestech.workers.dev/about/'), env);
   assert.equal(asset.headers.get('X-Robots-Tag'), 'noindex, nofollow');
-  const config = await worker.fetch(new Request('https://daybytes-tech-solutions.workers.dev/api/config?formType=contact'), env);
+  const config = await worker.fetch(new Request('https://daybytes-tech-solutions.daybytestech.workers.dev/api/config?formType=contact'), env);
   assert.equal(config.headers.get('X-Robots-Tag'), 'noindex, nofollow');
   assert.equal(config.headers.get('Cache-Control'), 'no-store');
 });
@@ -175,6 +175,7 @@ test('submission fails with a clear config error when the selected mail provider
 test('form endpoints accept workers.dev, localhost, and approved domains but reject unknown origins', async () => {
   for (const origin of [
     'https://daybytes-tech-solutions.daybytestech.workers.dev',
+    'https://daybytes-tech-solutions.daybytestech.workers.dev:443',
     'http://localhost:4321',
     'http://127.0.0.1:8787',
     'https://daybytes.com',
@@ -189,6 +190,21 @@ test('form endpoints accept workers.dev, localhost, and approved domains but rej
   }), env);
   assert.equal(response.status, 403);
   assert.match((await response.json()).error, /Unable to load this form/);
+});
+
+test('Turnstile hostname must match the Worker request hostname', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => Response.json({ success: true, hostname: 'attacker.example' });
+  try {
+    const response = await worker.fetch(new Request('https://daybytes.com/api/submit', {
+      method: 'POST',
+      body: await formFor('contact'),
+    }), env);
+    assert.equal(response.status, 400);
+    assert.match((await response.json()).error, /Security check failed/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test('every browser form submission uses multipart form_name and succeeds in console mode', async () => {

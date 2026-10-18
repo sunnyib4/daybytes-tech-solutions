@@ -1,6 +1,7 @@
 import { signStartedAt, validateSubmission, verifyTurnstile } from './lib/worker/forms.js';
 import FORM_TYPES from './lib/form-types.js';
 import { sendSubmission } from './lib/worker/mail.js';
+import { PUBLIC_EMAIL } from './lib/public-contact.js';
 
 const localBuckets = new Map();
 const reportedMissingConfigurations = new Set();
@@ -9,7 +10,18 @@ const MAIL_SECRET_BY_PROVIDER = {
   resend: 'RESEND_API_KEY',
   webhook: 'WEBHOOK_SECRET',
 };
-const ALLOWED_ORIGINS = new Set(['https://daybytes.com', 'https://www.daybytes.com']);
+const ALLOWED_ORIGINS = new Set([
+  'https://daybytes-tech-solutions.daybytestech.workers.dev',
+  'https://daybytes.com',
+  'https://www.daybytes.com',
+]);
+const ALLOWED_HOSTNAMES = new Set([
+  'daybytes-tech-solutions.daybytestech.workers.dev',
+  'daybytes.com',
+  'www.daybytes.com',
+  'localhost',
+  '127.0.0.1',
+]);
 const SECURITY_HEADERS = {
   'Content-Security-Policy': "default-src 'self'; base-uri 'self'; form-action 'self' https://calendly.com; frame-ancestors 'none'; object-src 'none'; frame-src 'self' https://calendly.com https://challenges.cloudflare.com; img-src 'self' data: blob: https://calendly.com https://assets.calendly.com https://challenges.cloudflare.com; font-src 'self' data: https://fonts.gstatic.com https://assets.calendly.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.calendly.com; script-src 'self' 'unsafe-inline' https://assets.calendly.com https://challenges.cloudflare.com; connect-src 'self' https://api.brevo.com https://api.resend.com https://calendly.com https://assets.calendly.com https://challenges.cloudflare.com; media-src 'self'; worker-src 'self' blob:;",
   'X-Content-Type-Options': 'nosniff',
@@ -75,15 +87,18 @@ function originAllowed(request) {
   try {
     const parsed = new URL(origin);
     if (ALLOWED_ORIGINS.has(parsed.origin)) return true;
-    if (parsed.protocol === 'https:' && parsed.hostname.endsWith('.workers.dev')) return true;
     return parsed.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(parsed.hostname);
   } catch {
     return false;
   }
 }
 
+function requestHostAllowed(request) {
+  return ALLOWED_HOSTNAMES.has(new URL(request.url).hostname.toLowerCase());
+}
+
 function unavailableFormResponse() {
-  return json({ error: 'Forms are temporarily unavailable. Please email support@daybytes.com.' }, 503);
+  return json({ error: `Forms are temporarily unavailable. Please email ${PUBLIC_EMAIL}.` }, 503);
 }
 
 const addHostRobotsHeader = (response, workersDev) => {
@@ -124,8 +139,8 @@ async function postSubmission(request, env) {
     return json({ error: 'Unable to process this form. Please check your details and try again.' }, 400);
   }
 
-  if (!originAllowed(request)) {
-    console.warn('Form request rejected: origin is not allowed.');
+  if (!requestHostAllowed(request) || !originAllowed(request)) {
+    console.warn('Form request rejected: host or origin is not allowed.');
     return json({ error: 'Unable to process this form. Please check your details and try again.' }, 403);
   }
 
@@ -153,6 +168,8 @@ async function postSubmission(request, env) {
       parsed.data['cf-turnstile-response'],
       env.TURNSTILE_SECRET_KEY,
       request.headers.get('CF-Connecting-IP'),
+      fetch,
+      new URL(request.url).hostname,
     );
   } catch {
     turnstileOk = false;
@@ -192,6 +209,10 @@ export default {
     if (url.pathname === '/api/config' && request.method === 'GET') {
       if (!originAllowed(request)) {
         console.warn('Form config request rejected: origin is not allowed.');
+        return addHostRobotsHeader(json({ error: 'Unable to load this form. Please refresh and try again.' }, 403), workerHost);
+      }
+      if (!requestHostAllowed(request)) {
+        console.warn('Form config request rejected: host is not allowed.');
         return addHostRobotsHeader(json({ error: 'Unable to load this form. Please refresh and try again.' }, 403), workerHost);
       }
       const formType = url.searchParams.get('formType');

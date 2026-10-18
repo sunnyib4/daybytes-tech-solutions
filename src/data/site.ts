@@ -1,4 +1,5 @@
 // Single source of truth for business details used across the site.
+import { PUBLIC_EMAIL } from '@/lib/public-contact.js';
 
 export const site = {
   name: 'Daybytes Tech Solutions',
@@ -10,7 +11,7 @@ export const site = {
   description:
     'Daybytes Tech Solutions is an IT solutions company in Lagos, Nigeria. IT support, web development, computer repair, training and business optimization for businesses and individuals.',
   phone: { display: '+234 913 320 3892', href: 'tel:+2349133203892', e164: '+2349133203892' },
-  email: 'support@daybytes.com',
+  email: PUBLIC_EMAIL,
   calendly: 'https://calendly.com/daybytestechsolutions',
   // Public form endpoints for the static site. The server route reads the actual Brevo
   // credentials from environment variables and does not expose them to the browser.

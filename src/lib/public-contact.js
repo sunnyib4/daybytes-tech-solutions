@@ -1,0 +1,1 @@
+export const PUBLIC_EMAIL = 'support@daybytes.com';
