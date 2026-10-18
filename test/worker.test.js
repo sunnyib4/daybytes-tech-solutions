@@ -130,7 +130,8 @@ test('missing form configuration names each missing binding in Worker logs only'
       const response = await worker.fetch(new Request('https://daybytes.com/api/config?formType=contact'), incompleteEnv);
       const body = await response.json();
       assert.equal(response.status, 503);
-      assert.deepEqual(body, { error: 'Form security is not configured' });
+      assert.match(body.error, /Forms are temporarily unavailable/);
+      assert.match(body.error, /support@daybytes\.com/);
       assert.ok(errors.some((message) => message.includes(variable)), `Worker logs should name ${variable}`);
       assert.doesNotMatch(errors.join(' '), /public-site-key|test-secret/);
       assert.doesNotMatch(JSON.stringify(body), /TURNSTILE_SITE_KEY|TURNSTILE_SECRET_KEY/);
@@ -162,7 +163,26 @@ test('submission fails with a clear config error when the selected mail provider
   });
 
   assert.equal(response.status, 503);
-  assert.match((await response.json()).error, /mail provider|configured|BREVO_API_KEY/i);
+  assert.match((await response.json()).error, /Forms are temporarily unavailable/);
+});
+
+test('form endpoints accept workers.dev, localhost, and approved domains but reject unknown origins', async () => {
+  for (const origin of [
+    'https://daybytes-tech-solutions.daybytestech.workers.dev',
+    'http://localhost:4321',
+    'http://127.0.0.1:8787',
+    'https://daybytes.com',
+    'https://www.daybytes.com',
+  ]) {
+    const response = await worker.fetch(new Request('https://daybytes.com/api/config?formType=contact', { headers: { Origin: origin } }), env);
+    assert.equal(response.status, 200, `${origin} should be allowed`);
+  }
+
+  const response = await worker.fetch(new Request('https://daybytes.com/api/config?formType=contact', {
+    headers: { Origin: 'https://attacker.example' },
+  }), env);
+  assert.equal(response.status, 403);
+  assert.match((await response.json()).error, /Unable to load this form/);
 });
 
 test('every browser form submission uses multipart form_name and succeeds in console mode', async () => {

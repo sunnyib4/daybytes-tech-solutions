@@ -9,6 +9,7 @@ const MAIL_SECRET_BY_PROVIDER = {
   resend: 'RESEND_API_KEY',
   webhook: 'WEBHOOK_SECRET',
 };
+const ALLOWED_ORIGINS = new Set(['https://daybytes.com', 'https://www.daybytes.com']);
 const SECURITY_HEADERS = {
   'Content-Security-Policy': "default-src 'self'; base-uri 'self'; form-action 'self' https://calendly.com; frame-ancestors 'none'; object-src 'none'; frame-src 'self' https://calendly.com https://challenges.cloudflare.com; img-src 'self' data: blob: https://calendly.com https://assets.calendly.com https://challenges.cloudflare.com; font-src 'self' data: https://fonts.gstatic.com https://assets.calendly.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.calendly.com; script-src 'self' 'unsafe-inline' https://assets.calendly.com https://challenges.cloudflare.com; connect-src 'self' https://api.brevo.com https://api.resend.com https://calendly.com https://assets.calendly.com https://challenges.cloudflare.com; media-src 'self'; worker-src 'self' blob:;",
   'X-Content-Type-Options': 'nosniff',
@@ -61,6 +62,30 @@ function logMissingConfiguration(env) {
   return missing;
 }
 
+function missingFormConfiguration(env) {
+  const required = ['MAIL_PROVIDER', 'TURNSTILE_SITE_KEY', 'TURNSTILE_SECRET_KEY'];
+  const mailSecret = MAIL_SECRET_BY_PROVIDER[env.MAIL_PROVIDER];
+  if (mailSecret) required.push(mailSecret);
+  return required.filter((name) => !env[name]);
+}
+
+function originAllowed(request) {
+  const origin = request.headers.get('Origin');
+  if (!origin) return true;
+  try {
+    const parsed = new URL(origin);
+    if (ALLOWED_ORIGINS.has(parsed.origin)) return true;
+    if (parsed.protocol === 'https:' && parsed.hostname.endsWith('.workers.dev')) return true;
+    return parsed.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(parsed.hostname);
+  } catch {
+    return false;
+  }
+}
+
+function unavailableFormResponse() {
+  return json({ error: 'Forms are temporarily unavailable. Please email support@daybytes.com.' }, 503);
+}
+
 const addHostRobotsHeader = (response, workersDev) => {
   const headers = new Headers(response.headers);
   if (workersDev) headers.set('X-Robots-Tag', 'noindex, nofollow');
@@ -99,8 +124,16 @@ async function postSubmission(request, env) {
     return json({ error: 'Unable to process this form. Please check your details and try again.' }, 400);
   }
 
-  const configError = missingConfigurationMessage(env);
-  if (configError) return json({ error: configError }, 503);
+  if (!originAllowed(request)) {
+    console.warn('Form request rejected: origin is not allowed.');
+    return json({ error: 'Unable to process this form. Please check your details and try again.' }, 403);
+  }
+
+  const missing = missingFormConfiguration(env);
+  if (missing.length) {
+    console.error(`Form request unavailable; missing Worker variables: ${missing.join(', ')}`);
+    return unavailableFormResponse();
+  }
 
   const parsed = await validateSubmission(request, env);
   if (!parsed.ok) {
@@ -157,13 +190,21 @@ export default {
     }
 
     if (url.pathname === '/api/config' && request.method === 'GET') {
+      if (!originAllowed(request)) {
+        console.warn('Form config request rejected: origin is not allowed.');
+        return addHostRobotsHeader(json({ error: 'Unable to load this form. Please refresh and try again.' }, 403), workerHost);
+      }
       const formType = url.searchParams.get('formType');
       if (!FORM_TYPES.includes(formType)) {
         const received = formType ? `"${formType.slice(0, 64)}"` : '(missing)';
         console.warn(`Form config rejected: formType=${received}; accepted=${JSON.stringify(FORM_TYPES)}.`);
         return addHostRobotsHeader(json({ error: 'Unable to load this form. Please refresh and try again.' }, 400), workerHost);
       }
-      if (!env.TURNSTILE_SITE_KEY || !env.TURNSTILE_SECRET_KEY) return addHostRobotsHeader(json({ error: 'Form security is not configured' }, 503), workerHost);
+      const missing = missingFormConfiguration(env);
+      if (missing.length) {
+        console.error(`Form config unavailable; missing Worker variables: ${missing.join(', ')}`);
+        return addHostRobotsHeader(unavailableFormResponse(), workerHost);
+      }
       const startedAt = Date.now().toString();
       const startedProof = await signStartedAt(startedAt, env.TURNSTILE_SECRET_KEY);
       return addHostRobotsHeader(json({ siteKey: env.TURNSTILE_SITE_KEY, startedAt, startedProof }, 200, { 'Cache-Control': 'no-store' }), workerHost);

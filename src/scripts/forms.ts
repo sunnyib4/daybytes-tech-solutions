@@ -99,7 +99,7 @@ function initForm(form: HTMLFormElement, signal: AbortSignal) {
         },
       });
     } catch {
-      if (status) status.textContent = 'The form could not load security verification. Please refresh and try again.';
+      if (status) status.textContent = `Forms are temporarily unavailable. Please email ${site.email}.`;
     }
   })();
 
