@@ -4,6 +4,7 @@
  */
 import { onPageLoad } from './lifecycle';
 import { site } from '@/data/site';
+import FORM_TYPES from '@/lib/form-types.js';
 
 type Control = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 type TurnstileApi = {
@@ -52,6 +53,11 @@ function initForm(form: HTMLFormElement, signal: AbortSignal) {
   let securityReady = false;
   let widgetId: string | undefined;
   const turnstileContainer = form.querySelector<HTMLElement>('[data-turnstile]');
+  const formType = form.dataset.formKind;
+  if (!formType || !FORM_TYPES.includes(formType)) {
+    if (status) status.textContent = 'This form is temporarily unavailable. Please contact us by email.';
+    return;
+  }
   const tokenInput = document.createElement('input');
   tokenInput.type = 'hidden';
   tokenInput.name = 'cf-turnstile-response';
@@ -61,7 +67,7 @@ function initForm(form: HTMLFormElement, signal: AbortSignal) {
 
   void (async () => {
     try {
-      const response = await fetch(`/api/config?formType=${encodeURIComponent(form.dataset.formKind ?? '')}`, { signal, headers: { Accept: 'application/json' } });
+      const response = await fetch(`/api/config?formType=${encodeURIComponent(formType)}`, { signal, headers: { Accept: 'application/json' } });
       const config = await response.json();
       if (!response.ok || !config.siteKey || !config.startedAt || !config.startedProof) throw new Error(config.error || 'Form security is not configured');
       const startedAtInput = form.querySelector<HTMLInputElement>('input[name="started_at"]');

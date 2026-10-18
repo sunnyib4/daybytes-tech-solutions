@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../src/worker.js';
+import FORM_TYPES from '../src/lib/form-types.js';
 import { signStartedAt } from '../src/lib/worker/forms.js';
 
 const env = {
@@ -19,12 +20,14 @@ const formFor = async (formType) => {
     name: 'Daybytes Test',
     email: 'test@example.com',
     phone: '',
+    _subject: formType === 'contact' ? 'New service request: daybytes.com' : formType === 'training' ? 'New training application: daybytes.com' : 'New job application: daybytes.com',
     consent: 'on',
     _gotcha: '',
     started_at: startedAt,
     started_proof: await signStartedAt(startedAt, env.TURNSTILE_SECRET_KEY),
-    'cf-turnstile-response': 'test-token',
+    'cf-turnstile-response': '',
   })) form.set(name, value);
+  form.append('cf-turnstile-response', 'test-token');
   if (formType === 'contact') {
     form.set('service', 'it-support');
     form.set('message', 'Worker smoke test');
@@ -64,7 +67,7 @@ test('apex POST /api/submit with an empty body reaches validation without redire
   const response = await requestWorker('https://daybytes.com/api/submit', { method: 'POST' });
   assert.equal(response.status, 400);
   assert.equal(response.status >= 300 && response.status < 400, false);
-  assert.match((await response.json()).error, /multipart/i);
+  assert.match((await response.json()).error, /Unable to process this form/);
 });
 
 test('www POST /api/submit uses method-preserving 308', async () => {
@@ -162,18 +165,80 @@ test('submission fails with a clear config error when the selected mail provider
   assert.match((await response.json()).error, /mail provider|configured|BREVO_API_KEY/i);
 });
 
-test('contact, training, and careers forms all return success in console mode', async () => {
+test('every browser form submission uses multipart form_name and succeeds in console mode', async () => {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = turnstileFetch;
   try {
-    for (const formType of ['contact', 'training', 'careers']) {
+    for (const formType of FORM_TYPES) {
       const request = new Request('https://daybytes.com/api/submit', { method: 'POST', body: await formFor(formType) });
+      assert.match(request.headers.get('content-type'), /^multipart\/form-data; boundary=/);
       const response = await worker.fetch(request, env);
-      assert.equal(response.status, 200, `${formType}: ${await response.clone().text()}`);
-      assert.deepEqual(await response.json(), { ok: true });
+      const payload = await response.json();
+      assert.notEqual(payload.error, 'Invalid form type', `${formType} must never be rejected as an unknown type`);
+      assert.equal(response.status, 200, `${formType}: ${JSON.stringify(payload)}`);
+      assert.deepEqual(payload, { ok: true });
     }
   } finally {
     globalThis.fetch = originalFetch;
+  }
+});
+
+test('unknown and missing browser form types are logged safely and return a generic error', async () => {
+  const warnings = [];
+  const originalWarn = console.warn;
+  console.warn = (...values) => warnings.push(values.join(' '));
+  try {
+    for (const formType of ['newsletter', '']) {
+      const form = await formFor('contact');
+      if (formType) form.set('form_name', formType);
+      else form.delete('form_name');
+      const response = await worker.fetch(new Request('https://daybytes.com/api/submit', { method: 'POST', body: form }), env);
+      assert.equal(response.status, 400);
+      const payload = await response.json();
+      assert.notEqual(payload.error, 'Invalid form type');
+      assert.match(payload.error, /Unable to process this form/);
+    }
+    assert.ok(warnings.some((message) => message.includes('form_name="newsletter"') && message.includes(JSON.stringify(FORM_TYPES))));
+    assert.ok(warnings.some((message) => message.includes('form_name=(missing)')));
+  } finally {
+    console.warn = originalWarn;
+  }
+});
+
+test('invalid form type diagnostics truncate and sanitize the received value', async () => {
+  const warnings = [];
+  const originalWarn = console.warn;
+  console.warn = (...values) => warnings.push(values.join(' '));
+  try {
+    const form = await formFor('contact');
+    form.set('form_name', `${'x'.repeat(80)}\ninjected`);
+    const response = await worker.fetch(new Request('https://daybytes.com/api/submit', { method: 'POST', body: form }), env);
+    assert.equal(response.status, 400);
+    assert.match((await response.json()).error, /Unable to process this form/);
+    assert.equal(warnings.length, 1);
+    assert.ok(warnings[0].includes(`form_name="${'x'.repeat(64)}"`));
+    assert.ok(warnings[0].includes(JSON.stringify(FORM_TYPES)));
+    assert.equal(warnings[0].includes('injected'), false);
+  } finally {
+    console.warn = originalWarn;
+  }
+});
+
+test('wrong content type is logged and returns a generic form error', async () => {
+  const warnings = [];
+  const originalWarn = console.warn;
+  console.warn = (...values) => warnings.push(values.join(' '));
+  try {
+    const response = await worker.fetch(new Request('https://daybytes.com/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ form_name: 'contact' }),
+    }), env);
+    assert.equal(response.status, 400);
+    assert.match((await response.json()).error, /Unable to process this form/);
+    assert.ok(warnings.some((message) => message.includes('unsupported content type "application/json"') && message.includes(JSON.stringify(FORM_TYPES))));
+  } finally {
+    console.warn = originalWarn;
   }
 });
 

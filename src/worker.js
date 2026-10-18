@@ -1,4 +1,5 @@
 import { signStartedAt, validateSubmission, verifyTurnstile } from './lib/worker/forms.js';
+import FORM_TYPES from './lib/form-types.js';
 import { sendSubmission } from './lib/worker/mail.js';
 
 const localBuckets = new Map();
@@ -92,13 +93,25 @@ function robotsDisallowResponse() {
 
 async function postSubmission(request, env) {
   if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405, { Allow: 'POST' });
-  if (!request.headers.get('content-type')?.toLowerCase().startsWith('multipart/form-data')) return json({ error: 'Expected multipart form data' }, 400);
+  const contentType = request.headers.get('content-type');
+  if (!contentType?.toLowerCase().startsWith('multipart/form-data')) {
+    console.warn(`Form request rejected: ${contentType ? `unsupported content type "${contentType.replace(/[\u0000-\u001f\u007f]/g, ' ').slice(0, 64)}"` : 'content type is missing'}; form_name unavailable; accepted=${JSON.stringify(FORM_TYPES)}.`);
+    return json({ error: 'Unable to process this form. Please check your details and try again.' }, 400);
+  }
 
   const configError = missingConfigurationMessage(env);
   if (configError) return json({ error: configError }, 503);
 
   const parsed = await validateSubmission(request, env);
-  if (!parsed.ok) return json({ error: parsed.error, field: parsed.field }, parsed.status);
+  if (!parsed.ok) {
+    if (parsed.invalidFormType) {
+      const received = parsed.receivedFormType ? `"${parsed.receivedFormType}"` : '(missing)';
+      console.warn(`Form request rejected: form_name=${received}; accepted=${JSON.stringify(FORM_TYPES)}.`);
+      return json({ error: 'Unable to process this form. Please check your details and try again.' }, parsed.status);
+    }
+    if (parsed.malformedMultipart) console.warn('Form request rejected: malformed multipart/form-data body.');
+    return json({ error: parsed.error, field: parsed.field }, parsed.status);
+  }
   if (parsed.data._gotcha) return json({ error: 'Submission rejected' }, 400);
   if (!await checkRateLimit(request, env, parsed.formType)) return json({ error: 'Too many submissions. Please try again later.' }, 429);
   let turnstileOk = false;
@@ -145,7 +158,11 @@ export default {
 
     if (url.pathname === '/api/config' && request.method === 'GET') {
       const formType = url.searchParams.get('formType');
-      if (!['contact', 'training', 'careers'].includes(formType)) return addHostRobotsHeader(json({ error: 'Invalid form type' }, 400), workerHost);
+      if (!FORM_TYPES.includes(formType)) {
+        const received = formType ? `"${formType.slice(0, 64)}"` : '(missing)';
+        console.warn(`Form config rejected: formType=${received}; accepted=${JSON.stringify(FORM_TYPES)}.`);
+        return addHostRobotsHeader(json({ error: 'Unable to load this form. Please refresh and try again.' }, 400), workerHost);
+      }
       if (!env.TURNSTILE_SITE_KEY || !env.TURNSTILE_SECRET_KEY) return addHostRobotsHeader(json({ error: 'Form security is not configured' }, 503), workerHost);
       const startedAt = Date.now().toString();
       const startedProof = await signStartedAt(startedAt, env.TURNSTILE_SECRET_KEY);

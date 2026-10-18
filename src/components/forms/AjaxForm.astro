@@ -4,10 +4,11 @@
  * (behaviour in src/scripts/forms.ts). Falls back to a normal POST without JS.
  */
 import { site } from '@/data/site';
+import FORM_TYPES from '@/lib/form-types.js';
 
 interface Props {
   id: string;
-  form: 'contact' | 'training' | 'careers';
+  form: (typeof FORM_TYPES)[number];
   subject: string;
   submitLabel: string;
   success: string;
@@ -16,7 +17,7 @@ interface Props {
   class?: string;
 }
 const { id, form, subject, submitLabel, success, requireOne, class: className } = Astro.props;
-const action = site.forms[form];
+const action = site.forms[form as keyof typeof site.forms];
 ---
 
 <p class="m-0 mb-7 text-muted">

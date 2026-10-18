@@ -1,6 +1,7 @@
 import { z } from 'zod';
+import FORM_TYPES from '../form-types.js';
 
-export const FORM_TYPES = ['contact', 'training', 'careers'];
+export { FORM_TYPES };
 export const MINIMUM_FILL_MS = 3000;
 export const MAX_FORM_AGE_MS = 30 * 60 * 1000;
 export const MAX_CV_BYTES = 10 * 1024 * 1024;
@@ -67,7 +68,15 @@ export function parseSubmission(formData) {
   if (String(formData.get('_gotcha') ?? '').trim()) return { ok: false, status: 400, error: 'Submission rejected' };
   const values = readFormValues(formData);
   const formType = values.form_name;
-  if (!FORM_TYPES.includes(formType)) return { ok: false, status: 400, error: 'Invalid form type' };
+  if (!FORM_TYPES.includes(formType)) {
+    return {
+      ok: false,
+      status: 400,
+      error: 'Unable to process this form. Please check your details and try again.',
+      invalidFormType: true,
+      receivedFormType: String(formData.get('form_name') ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').slice(0, 64),
+    };
+  }
 
   const cv = formData.get('cv');
   if (formType === 'careers' && cv instanceof File && cv.size > 0) {
@@ -128,7 +137,7 @@ export async function validateSubmission(request, env, now = Date.now()) {
   try {
     formData = await request.formData();
   } catch {
-    return { ok: false, status: 400, error: 'Expected multipart form data' };
+    return { ok: false, status: 400, error: 'Unable to process this form. Please check your details and try again.', malformedMultipart: true };
   }
   const parsed = parseSubmission(formData);
   if (!parsed.ok) return parsed;
