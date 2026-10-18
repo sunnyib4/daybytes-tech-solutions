@@ -103,7 +103,12 @@ async function postJson(url, headers, body, fetchImpl) {
   if (!response.ok) {
     const result = await response.clone().json().catch(() => null);
     const code = typeof result?.code === 'string' && /^[a-z0-9_-]{1,64}$/i.test(result.code) ? result.code : null;
-    throw new Error(`Mail provider returned ${response.status}${code ? ` (${code})` : ''}`);
+    const missingParameter = code === 'missing_parameter' && typeof result?.message === 'string'
+      ? result.message.match(/(?:missing|absent)(?:\s+(?:required|mandatory))?\s+(?:parameter|field)?\s*[:=]?\s*([a-z][a-z0-9_.\[\]]{0,63})/i)?.[1]
+        ?? result.message.match(/\b([a-z][a-z0-9_.\[\]]{0,63})\s+is\s+missing\b/i)?.[1]
+      : null;
+    const safeParameter = missingParameter && /^[a-z][a-z0-9_.\[\]]{0,63}$/i.test(missingParameter) ? missingParameter : null;
+    throw new Error(`Mail provider returned ${response.status}${code ? ` (${code})` : ''}${safeParameter ? ` field=${safeParameter}` : ''}`);
   }
   return response;
 }

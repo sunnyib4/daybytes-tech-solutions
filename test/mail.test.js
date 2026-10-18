@@ -58,6 +58,24 @@ test('mail provider failures retain only a safe machine-readable error code', as
   );
 });
 
+test('missing-parameter diagnostics retain only the provider field identifier', async () => {
+  const fetchImpl = async () => Response.json({
+    code: 'missing_parameter',
+    message: 'Missing parameter: sender.email; offending recipient ada@example.com; body: private text',
+  }, { status: 400 });
+
+  await assert.rejects(
+    sendSubmission({ formType: 'contact', data: formData, env: {
+      MAIL_PROVIDER: 'brevo', BREVO_API_KEY: 'test-key', BREVO_SENDER_EMAIL: 'sender@example.com',
+    }, fetchImpl }),
+    (error) => {
+      assert.equal(error.message, 'Mail provider returned 400 (missing_parameter) field=sender.email');
+      assert.doesNotMatch(error.message, /ada@example\.com|private text|offending/);
+      return true;
+    },
+  );
+});
+
 test('Resend sends notification and auto-reply', async () => {
   const requests = [];
   const fetchImpl = async (url, options) => { requests.push({ url, options, body: JSON.parse(options.body) }); return response(); };
