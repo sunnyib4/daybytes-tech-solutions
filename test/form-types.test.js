@@ -24,6 +24,22 @@ test('worker schemas and every AjaxForm caller use the shared form type list', (
   for (const formType of sentTypes) assert.ok(FORM_TYPES.includes(formType), `${formType} is not a supported form type`);
 });
 
+test('named site journeys map to the shared submission types or stay outside the Worker', () => {
+  const contact = readFileSync('src/pages/contact.astro', 'utf8');
+  const trainingApply = readFileSync('src/pages/training/apply.astro', 'utf8');
+  const trainingDetail = readFileSync('src/pages/training/[slug].astro', 'utf8');
+  const careers = readFileSync('src/components/careers/ApplicationForm.astro', 'utf8');
+  const consultation = readFileSync('src/components/ui/ConsultCard.astro', 'utf8');
+
+  assert.match(contact, /<AjaxForm[^>]*form="contact"/s, 'service request must use contact');
+  assert.match(trainingApply, /form="training"/, 'training application must use training');
+  assert.match(trainingDetail, /\/training\/apply\?program=\$\{program\.id\}/, 'training enrolment must lead to the training form');
+  assert.match(careers, /form="careers"/, 'careers applications must use careers');
+  assert.match(consultation, /<form action="\/contact" method="get"/);
+  assert.doesNotMatch(consultation, /\/api\/submit|data-ajax-form/);
+  assert.equal(readAstroFiles('src/pages').some((path) => /newsletter/i.test(path)), false);
+});
+
 test('the shared AjaxForm submits form_name as multipart FormData', () => {
   const source = readFileSync('src/components/forms/AjaxForm.astro', 'utf8');
   const client = readFileSync('src/scripts/forms.ts', 'utf8');
