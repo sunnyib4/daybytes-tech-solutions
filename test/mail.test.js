@@ -39,6 +39,18 @@ test('Brevo sends notification and auto-reply with attachments', async () => {
   assert.equal(requests[1].body.to[0].email, 'ada@example.com');
 });
 
+test('Brevo omits optional attachment property for submissions without files', async () => {
+  const requests = [];
+  const fetchImpl = async (_url, options) => { requests.push(JSON.parse(options.body)); return response(); };
+  await sendSubmission({ formType: 'contact', data: formData, env: {
+    MAIL_PROVIDER: 'brevo', BREVO_API_KEY: 'test-key', BREVO_SENDER_EMAIL: 'sender@example.com',
+  }, fetchImpl });
+
+  assert.equal(requests.length, 2);
+  assert.equal(Object.hasOwn(requests[0], 'attachment'), false);
+  assert.equal(Object.hasOwn(requests[1], 'attachment'), false);
+});
+
 test('mail provider failures retain only a safe machine-readable error code', async () => {
   const logger = { error: () => {} };
   const fetchImpl = async () => Response.json({

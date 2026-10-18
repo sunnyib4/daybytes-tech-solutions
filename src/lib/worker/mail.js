@@ -122,7 +122,9 @@ async function sendBrevo(message, env, fetchImpl) {
     subject: message.subject,
     htmlContent: message.html,
     textContent: message.text,
-    attachment: message.attachments?.map((file) => ({ content: file.content, name: file.filename, contentType: file.contentType })),
+    ...(message.attachments?.length ? {
+      attachment: message.attachments.map((file) => ({ content: file.content, name: file.filename, contentType: file.contentType })),
+    } : {}),
   };
   await postJson('https://api.brevo.com/v3/smtp/email', { 'api-key': env.BREVO_API_KEY, Accept: 'application/json' }, payload, fetchImpl);
 }
