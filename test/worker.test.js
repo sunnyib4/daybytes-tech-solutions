@@ -112,6 +112,12 @@ test('production robots comes from ASSETS with no noindex header', async () => {
   assert.equal(response.headers.get('X-Robots-Tag'), null);
 });
 
+test('test-brevo is not a public Worker mail-sending route', async () => {
+  const response = await worker.fetch(new Request('https://daybytes-tech-solutions.daybytestech.workers.dev/test-brevo'), env);
+  assert.equal(response.status, 200, 'the static fallback serves the not-found page');
+  assert.doesNotMatch(await response.text(), /Brevo test|send test email/i);
+});
+
 test('config endpoint returns public key and signed form start proof', async () => {
   const response = await worker.fetch(new Request('https://daybytes.com/api/config?formType=training'), env);
   const payload = await response.json();
