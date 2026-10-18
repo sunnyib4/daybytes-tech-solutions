@@ -100,7 +100,11 @@ async function fileAttachment(file) {
 
 async function postJson(url, headers, body, fetchImpl) {
   const response = await fetchImpl(url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) });
-  if (!response.ok) throw new Error(`Mail provider returned ${response.status}`);
+  if (!response.ok) {
+    const result = await response.clone().json().catch(() => null);
+    const code = typeof result?.code === 'string' && /^[a-z0-9_-]{1,64}$/i.test(result.code) ? result.code : null;
+    throw new Error(`Mail provider returned ${response.status}${code ? ` (${code})` : ''}`);
+  }
   return response;
 }
 

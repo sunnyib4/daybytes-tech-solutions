@@ -39,6 +39,25 @@ test('Brevo sends notification and auto-reply with attachments', async () => {
   assert.equal(requests[1].body.to[0].email, 'ada@example.com');
 });
 
+test('mail provider failures retain only a safe machine-readable error code', async () => {
+  const logger = { error: () => {} };
+  const fetchImpl = async () => Response.json({
+    code: 'sender_unvalidated',
+    message: 'Sender ada@example.com is not validated; submitted message: private text',
+  }, { status: 400 });
+
+  await assert.rejects(
+    sendSubmission({ formType: 'contact', data: formData, env: {
+      MAIL_PROVIDER: 'brevo', BREVO_API_KEY: 'test-key', BREVO_SENDER_EMAIL: 'sender@example.com',
+    }, fetchImpl, logger }),
+    (error) => {
+      assert.equal(error.message, 'Mail provider returned 400 (sender_unvalidated)');
+      assert.doesNotMatch(error.message, /ada@example\.com|private text/);
+      return true;
+    },
+  );
+});
+
 test('Resend sends notification and auto-reply', async () => {
   const requests = [];
   const fetchImpl = async (url, options) => { requests.push({ url, options, body: JSON.parse(options.body) }); return response(); };
