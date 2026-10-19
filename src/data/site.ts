@@ -1,11 +1,12 @@
 // Single source of truth for business details used across the site.
 import { PUBLIC_EMAIL } from '@/lib/public-contact.js';
+import { SITE_URL } from '@/lib/site-url.js';
 
 export const site = {
   name: 'Daybytes Tech Solutions',
   legalName: 'Daybytes Tech Solutions',
   shortName: 'Daybytes',
-  url: 'https://daybytes.com',
+  url: SITE_URL,
   rcNumber: '8035192',
   tagline: 'Smart tech that keeps your business moving',
   description:

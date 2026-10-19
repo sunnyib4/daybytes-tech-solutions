@@ -1,6 +1,6 @@
 import { escapeHtml } from './forms.js';
+import { SITE_URL } from '../site-url.js';
 
-const SITE_URL = 'https://daybytes.com';
 const DEFAULT_EMAIL = 'support@daybytes.com';
 const DEFAULT_SENDER = 'support@daybytes.com';
 const SENDER_NAME = 'Daybytes Tech Solutions';
@@ -52,7 +52,7 @@ function rowsFor(formType, data) {
 }
 
 function emailLayout(content, preheader) {
-  const logoUrl = `${SITE_URL}/brand/daybytes-logo-512.png`;
+  const logoUrl = `${SITE_URL}/brand/email-logo.png`;
   return `
     <div style="margin:0;padding:0;background-color:#f4f3f1">
       <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${escapeHtml(preheader)}</div>
@@ -61,7 +61,7 @@ function emailLayout(content, preheader) {
           <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="width:100%;max-width:600px;border-collapse:collapse;background-color:#ffffff">
             <tr><td height="4" bgcolor="#f26a1b" style="height:4px;line-height:4px;font-size:0">&nbsp;</td></tr>
             <tr><td style="padding:20px 28px;border-bottom:1px solid #e3dfda"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-              <td valign="middle" style="padding-right:12px"><img src="${escapeHtml(logoUrl)}" width="42" height="42" alt="Daybytes mark" style="display:block;width:42px;height:42px;border:0" /></td>
+              <td valign="middle" style="padding-right:12px"><img src="${escapeHtml(logoUrl)}" width="42" height="42" alt="Daybytes Tech Solutions" style="display:block;width:42px;height:42px;border:0;color:#1a1714;font-family:Arial,sans-serif;font-size:9px;font-weight:700;line-height:1.15;text-align:center;background-color:#ffffff" /></td>
               <td valign="middle" style="color:#1a1714;font-family:Arial,sans-serif;font-size:15px;font-weight:700;line-height:1.35">Daybytes Tech Solutions<br /><span style="color:#5a524b;font-size:10px;font-weight:400;letter-spacing:1px">SMART TECH FOR BUSINESS</span></td>
             </tr></table></td></tr>
             <tr><td style="padding:30px 28px 34px">${content}</td></tr>

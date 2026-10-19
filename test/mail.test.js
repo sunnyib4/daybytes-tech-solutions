@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
 import { buildMessages, sendSubmission } from '../src/lib/worker/mail.js';
+import { SITE_URL } from '../src/lib/site-url.js';
 
 const formData = {
   name: '<Ada>',
@@ -22,6 +24,27 @@ test('notification and auto-reply templates escape untrusted fields', async () =
   assert.match(autoReply.html, /Thanks for reaching out, &lt;Ada&gt;/);
   assert.equal(notification.to, 'support@daybytes.com');
   assert.equal(autoReply.to, 'ada@example.com');
+});
+
+test('notification and auto-reply use the canonical public email logo asset', async () => {
+  const { notification, autoReply } = await buildMessages('contact', formData, null, {});
+  const expectedLogo = `${SITE_URL}/brand/email-logo.png`;
+  const siteSource = readFileSync(new URL('../src/data/site.ts', import.meta.url), 'utf8');
+  const logoPath = new URL('../public/brand/email-logo.png', import.meta.url);
+  const logo = readFileSync(logoPath);
+
+  assert.equal(SITE_URL, 'https://daybytes.com');
+  assert.match(siteSource, /url:\s*SITE_URL/);
+  assert.equal(existsSync(logoPath), true);
+  assert.deepEqual([...logo.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+  assert.ok(logo.readUInt32BE(16) >= 168, 'email PNG width must be at least 168 px');
+  assert.ok(logo.readUInt32BE(20) >= 168, 'email PNG height must be at least 168 px');
+  assert.ok(logo.length < 50 * 1024, 'email PNG must remain under 50 KB');
+  for (const html of [notification.html, autoReply.html]) {
+    assert.ok(html.includes(`src="${expectedLogo}"`));
+    assert.match(html, /width="42" height="42" alt="Daybytes Tech Solutions"/);
+    assert.match(html, /color:#1a1714;font-family:Arial,sans-serif;font-size:9px/);
+  }
 });
 
 test('Brevo sends notification and auto-reply with attachments', async () => {
