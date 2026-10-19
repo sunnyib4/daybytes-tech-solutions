@@ -178,7 +178,7 @@ export default function ProjectStack({ projects, headingLevel = 'h3', showFilter
               data-active={activeFilter === filter}
               onClick={() => setActiveFilter(filter)}
               aria-pressed={activeFilter === filter}
-              className="rounded-full border border-line-strong bg-surface px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-subtle transition-colors hover:text-ink data-[active=true]:border-accent data-[active=true]:bg-accent/10 data-[active=true]:text-accent"
+              className="rounded-full border border-line-strong bg-surface px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-subtle transition-colors hover:text-ink data-[active=true]:border-accent data-[active=true]:bg-accent/10 data-[active=true]:text-accent-text"
             >
               {filter}
             </button>
