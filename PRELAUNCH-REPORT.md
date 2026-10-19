@@ -1,5 +1,26 @@
 # Daybytes Pre-launch QA Report
 
+## Latest Verification (2026-10-18)
+
+This section supersedes conflicting blocker findings later in this report, which describe the earlier pre-fix audit. Verification was run against the freshly built local preview at `http://127.0.0.1:4321/`; it was not a production deployment.
+
+| Area | Latest result | Evidence |
+| --- | --- | --- |
+| Build and unit tests | PASS | `npm run build` completed; `npm test` passed 45/45 tests. Astro reported 0 errors and 8 hints. |
+| Form types and route | PASS (unit-level) | Browser form journeys use the shared Worker form types; accepted submission tests pass in the Worker harness. `/test-brevo` is absent from public page sources and has no mail-send route. |
+| Worker form configuration | PASS (unit-level); integration OPEN | `/api/config` tests cover the public key, signed start proof, safe generic 503, missing-binding-name-only logs, trusted origins, and hostname verification. `npm run test:worker` fails at submission verification because its synthetic local Turnstile token is rejected by the real verifier. No verification was weakened. |
+| Worker public bindings | PASS in source | `TURNSTILE_SITE_KEY` is a public Wrangler var. `TURNSTILE_SECRET_KEY` and `BREVO_API_KEY` remain runtime secrets, not added to tracked configuration. Actual Cloudflare dashboard state was not inspected. |
+| Responsive layout and menu | PASS | 32 sitemap routes × 5 widths (320, 375, 390, 768, 1280) = 160 viewport checks passed. Touch tap, Enter open/close, and Escape close passed. |
+| Axe accessibility | PASS locally | Full axe scan: 32 sitemap routes × light/dark themes = 64 audits with no violations after disabling reveal transitions for stable measurements. Careers, Contact, and Training Apply each returned zero axe violations. |
+| Calendly and CSP | PASS locally | No iframe existed before activation. After clicking “Book a free call”, Calendly and its assets returned HTTP 200 in Chromium and the iframe rendered. Screenshot was shown in the review session. CSP uses explicit sources only, with no wildcard source or `unsafe-eval`; the cookie-policy note is present. |
+| Hydration and browser errors | PASS for hydration; preview API requests expectedly fail | No hydration #418 or uncaught page exceptions on the 32 sitemap routes. The three console 404s are `/api/config` on Careers, Contact, and Training Apply because static Astro preview does not execute the Worker; validate those on Workers. |
+| Lighthouse (local preview) | COMPLETE | `/`: 55 / 100 / 100 / 100; `/contact/`: 99 / 100 / 96 / 100; `/about/`: 86 / 100 / 100 / 100 (Performance / Accessibility / Best Practices / SEO). These are local preview scores, not workers.dev scores. |
+| Contrast | PASS locally | Stable, animation-free axe contrast audit: zero failures across all 64 route/theme audits. The brand orange `#F26A1B` and hero gradient were not changed. Text-only project uses now reference the semantic accent-text token. |
+
+**Still open before launch:** Run the form submission/config checks against the deployed `https://daybytes-tech-solutions.daybytestech.workers.dev/` Worker with valid dashboard configuration; confirm `TURNSTILE_SECRET_KEY` and `BREVO_API_KEY` are configured as dashboard secrets; verify real email delivery without using public test routes; and review legal/content/assets with the business owner. The local synthetic-token Worker smoke failure prevents claiming end-to-end form delivery is verified. Lighthouse on the deployed workers.dev host and production-domain SEO also remain unverified.
+
+**Latest code commit:** `cd1c398` (`fix: improve project accent text contrast`). Earlier form-related fixes are in `9c4e629`, `fc7bbd1`, `a8fcbe8`, and `3e9fae5`.
+
 **Target:** `https://daybytes-tech-solutions.daybytestech.workers.dev/`  
 **Run date:** 2026-10-17  
 **Scope:** Read-only QA. No site code was changed, no forms containing personal data were submitted, and no deployment was run. Screenshots are in `/tmp/daybytes-prelaunch-screenshots/`.
