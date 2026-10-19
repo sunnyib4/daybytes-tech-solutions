@@ -1,7 +1,29 @@
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:net';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { resolve } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import assert from 'node:assert/strict';
+
+const testConfigDir = await mkdtemp(`${tmpdir()}/daybytes-worker-test-`);
+const testConfigPath = resolve(testConfigDir, 'wrangler.jsonc');
+await writeFile(testConfigPath, JSON.stringify({
+  name: 'daybytes-worker-smoke-test',
+  main: resolve('scripts/test-worker-entry.mjs'),
+  compatibility_date: '2026-10-13',
+  workers_dev: true,
+  assets: {
+    directory: resolve('dist'),
+    binding: 'ASSETS',
+    run_worker_first: ['/api/*', '/robots.txt'],
+  },
+  ratelimits: [{
+    name: 'FORM_RATE_LIMITER',
+    namespace_id: '2026101601',
+    simple: { limit: 5, period: 60 },
+  }],
+}));
 
 const portServer = createServer();
 await new Promise((resolve) => portServer.listen(0, '127.0.0.1', resolve));
@@ -9,17 +31,17 @@ const { port } = portServer.address();
 await new Promise((resolve, reject) => portServer.close((error) => error ? reject(error) : resolve()));
 
 const child = spawn('npx', [
-  'wrangler', 'dev', '--config', 'wrangler.jsonc', '--local', '--ip', '127.0.0.1', '--port', String(port), '--host', 'daybytes.com',
+  'wrangler', 'dev', '--config', testConfigPath, '--local', '--ip', '127.0.0.1', '--port', String(port), '--host', 'localhost',
   '--var', 'MAIL_PROVIDER:console',
   '--var', 'ENVIRONMENT:development',
   '--var', 'TURNSTILE_SITE_KEY:1x00000000000000000000AA',
   '--var', 'TURNSTILE_SECRET_KEY:1x0000000000000000000000000000000AA',
-], { cwd: process.cwd(), stdio: ['ignore', 'pipe', 'pipe'] });
+], { cwd: process.cwd(), detached: process.platform !== 'win32', stdio: ['ignore', 'pipe', 'pipe'] });
 let output = '';
 child.stdout.on('data', (chunk) => { output += chunk; });
 child.stderr.on('data', (chunk) => { output += chunk; });
-const baseUrl = `http://127.0.0.1:${port}`;
-const localHeaders = { Host: 'daybytes.com' };
+const baseUrl = `http://localhost:${port}`;
+const localHeaders = {};
 
 async function waitForServer() {
   for (let attempt = 0; attempt < 120; attempt += 1) {
@@ -49,7 +71,7 @@ function formData(formType, details, changes = {}) {
   data.set('_gotcha', '');
   data.set('started_at', details.startedAt);
   data.set('started_proof', details.startedProof);
-  data.set('cf-turnstile-response', 'local-turnstile-test-token');
+  data.set('cf-turnstile-response', 'XXXX.DUMMY.TOKEN.XXXX');
   if (formType === 'contact') {
     data.set('service', 'it-support');
     data.set('message', 'Local Worker smoke test');
@@ -114,7 +136,17 @@ try {
   console.error(output);
   process.exitCode = 1;
 } finally {
-  child.kill('SIGTERM');
-  await Promise.race([new Promise((resolve) => child.once('exit', resolve)), delay(5000)]);
-  if (child.exitCode === null) child.kill('SIGKILL');
+  const stopProcessGroup = (signal) => {
+    try {
+      if (process.platform === 'win32') child.kill(signal);
+      else process.kill(-child.pid, signal);
+    } catch {}
+  };
+  stopProcessGroup('SIGTERM');
+  await Promise.race([new Promise((resolve) => child.once('exit', resolve)), delay(3000)]);
+  if (child.exitCode === null) {
+    stopProcessGroup('SIGKILL');
+    await Promise.race([new Promise((resolve) => child.once('exit', resolve)), delay(2000)]);
+  }
+  await rm(testConfigDir, { recursive: true, force: true });
 }
