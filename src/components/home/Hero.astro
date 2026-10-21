@@ -39,7 +39,7 @@ import ProblemCarousel from './ProblemCarousel.astro';
           fetchpriority="high"
           class="absolute inset-[2.5%] size-[95%] rounded-full transition-opacity duration-700 group-data-[sphere-live]:opacity-0"
         />
-        <HeroSphere client:load />
+        <HeroSphere client:media="(min-width: 768px)" />
         <canvas data-sphere-2d aria-hidden="true" class="absolute inset-[2.5%] size-[95%] rounded-full"></canvas>
 
         <ProblemCarousel />

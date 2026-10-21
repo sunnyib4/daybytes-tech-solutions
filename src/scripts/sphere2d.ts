@@ -229,7 +229,7 @@ onPageLoad((pageSignal) => {
 
   // Re-evaluate when the viewport crosses the phone breakpoint or the motion setting changes.
   const evaluate = () => {
-    const shouldRun = !prefersReducedMotion();
+    const shouldRun = !prefersReducedMotion() && (phone.matches || !webgl);
     if (shouldRun && !run) {
       run = new AbortController();
       start(canvas, host, run.signal);

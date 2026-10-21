@@ -307,6 +307,9 @@ function usePrefersReducedMotion() {
 
 export default function HeroSphere() {
   const reduced = usePrefersReducedMotion();
+  const [wideViewport, setWideViewport] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches,
+  );
   const [webgl, setWebgl] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const wrapper = useRef<HTMLDivElement>(null);
@@ -319,9 +322,17 @@ export default function HeroSphere() {
     setWebgl(supportsWebGL());
   }, []);
 
+  useEffect(() => {
+    const query = window.matchMedia('(min-width: 768px)');
+    const update = () => setWideViewport(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+
   // Pause rendering while the hero is scrolled away or the tab is hidden.
   useEffect(() => {
-    if (!wrapper.current) return;
+    if (!wideViewport || !wrapper.current) return;
     const io = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting));
     io.observe(wrapper.current);
     const onVisibility = () => setTabVisible(!document.hidden);
@@ -337,18 +348,18 @@ export default function HeroSphere() {
       document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('pointermove', onMove);
     };
-  }, [reduced, webgl]);
+  }, [reduced, webgl, wideViewport]);
 
   // Hand over from the static image once WebGL is drawing; hand back on unmount.
   const host = () => wrapper.current?.closest('[data-sphere]');
   useEffect(() => {
-    if (!reduced && webgl && host()) {
+    if (wideViewport && !reduced && webgl && host()) {
       host()?.setAttribute('data-sphere-live', '');
     }
     return () => host()?.removeAttribute('data-sphere-live');
-  }, [reduced, webgl]);
+  }, [wideViewport, reduced, webgl]);
 
-  if (!hydrated || reduced || !webgl) return null;
+  if (!hydrated || !wideViewport || reduced || !webgl) return null;
 
   return (
     <div ref={wrapper} className="absolute inset-0" aria-hidden="true">
