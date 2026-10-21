@@ -11,10 +11,10 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
 ---
 
 <header class:list={[overlay ? 'absolute inset-x-0 top-0' : 'relative', 'z-30']}>
-  <div class="mx-auto flex max-w-[1280px] items-center justify-between gap-5 px-4 pt-6 sm:px-6">
-    <a href="/" class="flex items-center gap-3 text-ink no-underline">
+  <div class="mx-auto flex max-w-[1280px] items-center justify-between gap-2 px-4 pt-6 sm:gap-5 sm:px-6">
+    <a href="/" class="flex min-w-0 items-center gap-2 text-ink no-underline sm:gap-3">
       <Logo size={36} class="size-8 sm:size-9" />
-      <span aria-hidden="true" class="text-[26px] font-medium tracking-[-0.03em] sm:text-[30px]">Daybytes</span>
+      <span aria-hidden="true" class="max-[360px]:hidden text-[26px] font-medium tracking-[-0.03em] sm:text-[30px]">Daybytes</span>
       <span class="sr-only">home</span>
     </a>
 
@@ -37,14 +37,14 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
       <a href={site.calendly} target="_blank" rel="noopener noreferrer" class="btn-accent rounded-lg px-[18px] py-3">Book a free call</a>
     </nav>
 
-    <div class="flex items-center gap-2 lg:hidden">
-      <ThemeToggle class="bg-surface" />
+    <div class="flex shrink-0 items-center gap-1 lg:hidden sm:gap-2">
+      <ThemeToggle class="shrink-0 bg-surface" />
       <button
         type="button"
         id="menu-button"
         aria-expanded="false"
         aria-controls="mobile-nav"
-        class="inline-flex h-11 items-center gap-2 rounded-lg bg-surface px-4 font-mono text-sm text-ink"
+        class="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg bg-surface px-3 font-mono text-sm text-ink sm:px-4"
       >
         <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
           <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"></path>
