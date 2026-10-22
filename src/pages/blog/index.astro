@@ -21,7 +21,7 @@ const posts = await getPosts();
 
   <section aria-label="All posts" class="px-4 pt-6 pb-24 sm:px-6">
     <div data-reveal-stagger class="mx-auto grid max-w-[1100px] grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-5">
-      {posts.map((p) => <PostCard post={p} headingLevel="h2" />)}
+      {posts.map((p, index) => <PostCard post={p} headingLevel="h2" priority={index === 0} />)}
     </div>
   </section>
 </BaseLayout>
