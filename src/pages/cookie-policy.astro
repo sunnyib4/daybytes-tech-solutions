@@ -3,25 +3,23 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/sections/PageHero.astro';
 import { site } from '@/data/site';
 ---
-<!-- Internal draft for lawyer review only. -->
-<BaseLayout title="Cookie Policy" description="Draft cookie policy explaining Daybytes theme preference storage and external tools. Pending confirmation and legal review." noindex overlayHeader>
-  <PageHero eyebrow="Legal" title="Cookie Policy" intro="This page is a draft for legal review before launch." breadcrumbs={[{ label: 'Cookie Policy', href: '/cookie-policy' }]} />
+<BaseLayout title="Cookie Policy" description="How Daybytes uses local storage and third-party services on this website." overlayHeader>
+  <PageHero eyebrow="Legal" title="Cookie Policy" intro="The browser storage and third-party services used by this website." breadcrumbs={[{ label: 'Cookie Policy', href: '/cookie-policy' }]} />
 
   <section class="mx-auto max-w-[760px] px-4 py-16 sm:px-6">
     <div class="prose prose-lg max-w-none">
-      <p><strong>Draft:</strong> This policy is a working draft and should be reviewed by a lawyer before publication.</p>
-      <p>We use a small amount of local storage for a theme preference and may use analytics or external tools in future. This page explains what is set and why.</p>
-      <h2>What we use now</h2>
+      <p>This page describes the browser storage used by Daybytes and the third-party services connected to website features.</p>
+      <h2>Storage used by Daybytes</h2>
       <ul>
-        <li><strong>Theme preference:</strong> stored in localStorage to remember light or dark mode. This is strictly necessary for user experience and is not used for advertising or tracking.</li>
+        <li><strong>Theme preference:</strong> the site uses the localStorage key <code>theme</code> to remember your light or dark theme choice. This value is not used for advertising or analytics.</li>
       </ul>
-      <p><strong>[TO CONFIRM]</strong> Confirm any analytics, booking, CRM, or advertising tools that place cookies or local storage on the site. If none are used, this page can be simplified to a short cookie statement.</p>
-      <h2>External tools</h2>
-      <p>Calendly, email providers, and hosting services may set cookies or use tracking as part of their own services. We will only use them with a clear purpose and update this policy when the stack changes.</p>
+      <h2>Third-party services</h2>
+      <p>Cloudflare Turnstile loads from <code>challenges.cloudflare.com</code> on form pages to protect forms from automated abuse. Calendly loads from <code>calendly.com</code> only when you choose to open the booking service. Brevo delivers form-related emails from the server and does not run in your browser. The deployed pages attempt to request the Cloudflare Web Analytics beacon from <code>static.cloudflareinsights.com</code>, but the site's Content Security Policy blocks that request, so the beacon does not load. No first-party cookies were observed during the production check. The only first-party browser storage key found in the site code is <code>theme</code> in localStorage, used to remember your light or dark theme choice. Third-party services may use their own browser storage when you choose to use them.</p>
       <h2>How to control cookies</h2>
-      <p>You can clear browser cookies or block non-essential cookies through your browser settings. If we later add a consent banner, we will offer clear manage and reject choices.</p>
+      <p>You can clear cookies and local storage, or restrict browser storage, through your browser settings. Clearing local storage will reset your saved theme preference. Blocking third-party storage may affect Turnstile verification or Calendly booking.</p>
       <h2>Contact</h2>
       <p>{site.legalName}<br /><a href={`mailto:${site.email}`}>{site.email}</a><br /><a href={site.phone.href}>{site.phone.display}</a></p>
+      <p class="mt-10 border-t border-line pt-4 text-sm text-muted">Last updated: 24 October 2026</p>
     </div>
   </section>
 </BaseLayout>

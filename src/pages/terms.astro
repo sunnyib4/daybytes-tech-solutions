@@ -3,21 +3,20 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/sections/PageHero.astro';
 import { site } from '@/data/site';
 ---
-<!-- Internal draft for lawyer review only. -->
-<BaseLayout title="Terms & Conditions" description="Draft terms for using the Daybytes Tech Solutions website and requesting services. Pending business confirmation and legal review." noindex overlayHeader>
-  <PageHero eyebrow="Legal" title="Terms & Conditions" intro="This page is a draft for legal review before launch." breadcrumbs={[{ label: 'Terms & Conditions', href: '/terms' }]} />
+<BaseLayout title="Terms & Conditions" description="Terms for using the Daybytes Tech Solutions website and requesting services." overlayHeader>
+  <PageHero eyebrow="Legal" title="Terms & Conditions" intro="The terms that apply when you use this website or request Daybytes services." breadcrumbs={[{ label: 'Terms & Conditions', href: '/terms' }]} />
 
   <section class="mx-auto max-w-[760px] px-4 py-16 sm:px-6">
     <div class="prose prose-lg max-w-none">
-      <p><strong>Draft:</strong> This is a working draft and should be reviewed by a lawyer before publication.</p>
       <p>These terms govern your use of the Daybytes Tech Solutions website and any services requested through it.</p>
       <h2>Services</h2>
       <p>We provide IT support, software and web development, business optimization, training, and related technical services. Scope, pricing, timelines, and responsibilities are set out in the relevant proposal, statement of work, or booking confirmation.</p>
       <h2>Consultations and bookings</h2>
       <p>Free consultations and paid bookings are subject to the scheduling tool, our availability, and our confirmation. We may change or cancel appointments with reasonable notice.</p>
-      <p>For free bookings, provide at least 48 hours’ notice to reschedule without charge, subject to availability. With less than 48 hours’ notice, a reasonable, previously disclosed cancellation fee may apply. A reasonable, disclosed no-show charge may apply where legally permitted. If Daybytes cancels, it will offer a replacement appointment or an appropriate refund for the undelivered service.</p>
-      <p>The proposed project deposit is 50%. Proposed payment methods to advertise are bank transfer and Visa, Verve, and Mastercard payments. International card payments are also proposed, subject to verification that the enabled provider supports them. Confirm actual payment capabilities before publishing payment claims. The project proposal, invoice, service agreement, and training checkout should disclose service-specific terms before payment.</p>
-      <p><strong>[TO CONFIRM]</strong> Confirm which enabled card-payment provider is used and whether it accepts international cards before advertising international card payments.</p>
+      <p>For free consultations, rescheduling with at least 48 hours' notice is free and subject to availability. Any cancellation or no-show fee for a change made with less than 48 hours' notice will be disclosed before booking. If Daybytes cancels, we will offer a replacement appointment or an appropriate refund for an undelivered paid service.</p>
+      <h2>Pricing and payment</h2>
+      <p>Project proposals require a 50% deposit. The proposal, invoice, or service agreement will state the remaining payment schedule and any service-specific charges before work begins or payment is due.</p>
+      <p>Payments. We accept international bank transfers in Nigerian naira (NGN), US dollars (USD), euros (EUR) and British pounds (GBP). We do not accept or process card payments on this website. We issue an invoice for every payment, and our bank details appear only on the invoice we send you. Before you pay, confirm the details by emailing or calling us on the contact details on this website, since we will never change payment details by message alone. Bank and intermediary charges are the payer's responsibility unless we agree otherwise in writing. Work begins on the terms set out in your quote or agreement.</p>
       <h2>Acceptable use</h2>
       <p>You agree not to misuse the website, attempt to interfere with our systems, or submit unlawful, harmful, or abusive content.</p>
       <h2>Intellectual property</h2>
@@ -25,9 +24,10 @@ import { site } from '@/data/site';
       <h2>Limitation of liability</h2>
       <p>We are not liable for indirect, special, or consequential damage arising from the use of the site or our services, except where law does not allow that limitation.</p>
       <h2>Governing law</h2>
-      <p>These terms are governed by Nigerian law, and disputes are subject to the courts of Nigeria, subject to review for applicable legal compliance.</p>
+      <p>These terms are governed by Nigerian law, and disputes are subject to the courts of Nigeria.</p>
       <h2>Contact</h2>
       <p>{site.legalName}<br /><a href={`mailto:${site.email}`}>{site.email}</a><br /><a href={site.phone.href}>{site.phone.display}</a></p>
+      <p class="mt-10 border-t border-line pt-4 text-sm text-muted">Last updated: 24 October 2026</p>
     </div>
   </section>
 </BaseLayout>

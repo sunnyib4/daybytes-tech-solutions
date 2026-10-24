@@ -31,7 +31,12 @@ for (const [directory, dateField, routePrefix] of [
 const draftProjects = readdirSync('./src/content/projects')
   .filter((f) => f.endsWith('.md') && readFileSync(`./src/content/projects/${f}`, 'utf8').includes('[TO CONFIRM'))
   .map((f) => `/projects/${f.replace(/\.md$/, '')}/`);
-const draftStaticPaths = ['/privacy/', '/cookie-policy/', '/terms/', '/refund-policy/'];
+/** @type {string[]} */
+const legalPolicyPaths = ['/privacy/', '/cookie-policy/', '/terms/', '/refund-policy/'];
+const draftStaticPaths = legalPolicyPaths.filter((path) => {
+  const page = path.replace(/^\//, '').replace(/\/$/, '');
+  return readFileSync(`./src/pages/${page}.astro`, 'utf8').includes('[TO CONFIRM]');
+});
 
 export default defineConfig({
   site: 'https://daybytes.com',

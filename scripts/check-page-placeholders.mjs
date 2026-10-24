@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const root = process.cwd();
 const placeholderPattern = /\[TO CONFIRM\]|\[Team member name\]|\[Role\]|EXAMPLE ROLE|not public while `open: false`/gi;
+const legalPolicyPaths = new Set(['/privacy/', '/cookie-policy/', '/terms/', '/refund-policy/']);
 const findings = [];
 const failures = [];
 
@@ -54,6 +55,9 @@ for (const file of await readDirectory('src/pages')) {
   const route = file.replace(/^src\/pages/, '').replace(/\/index\.astro$/, '').replace(/\.astro$/, '').replace(/\[slug\]/g, ':slug') || '/';
   findings.push({ route, file, count, held: noindex });
   if (!noindex) failures.push(`${route} (${file})`);
+  if (legalPolicyPaths.has(`${route}/`.replace(/\/+/g, '/')) && !noindex) {
+    failures.push(`${route}: unresolved legal-page placeholders require noindex and sitemap exclusion`);
+  }
 }
 
 if (failures.length) {

@@ -1,8 +1,7 @@
 ---
-name: "[Team member name]"
-role: "[Role]"
+name: "Tobiloba Ibidapo"
+role: "IT Solution Specialist"
 order: 1
-draft: true
+photo: ../../assets/founder_image.jpeg
+draft: false
 ---
-
-Placeholder: the current site lists no team members. Replace this with real bios and photos, then set `draft: false`.

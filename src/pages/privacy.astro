@@ -3,38 +3,41 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/sections/PageHero.astro';
 import { site } from '@/data/site';
 ---
-<!-- Internal draft for lawyer review only. -->
-<BaseLayout title="Privacy Policy" description="Draft privacy notice describing how Daybytes handles enquiries, training applications, and job applications. Pending legal review." noindex overlayHeader>
-  <PageHero eyebrow="Legal" title="Privacy Policy" intro="This page is a draft for legal review before launch." breadcrumbs={[{ label: 'Privacy Policy', href: '/privacy' }]} />
+<BaseLayout title="Privacy Policy" description="How Daybytes collects, uses, shares and retains personal information." overlayHeader>
+  <PageHero eyebrow="Legal" title="Privacy Policy" intro="How we handle personal information when you use our website, contact us, apply for training or apply for a role." breadcrumbs={[{ label: 'Privacy Policy', href: '/privacy' }]} />
 
   <section class="mx-auto max-w-[760px] px-4 py-16 sm:px-6">
     <div class="prose prose-lg max-w-none">
-      <p><strong>Draft:</strong> This policy is a working draft for lawyer review and should not be treated as final legal advice.</p>
       <p>{site.name} is a technology and training business based in Lagos, Nigeria. We collect personal information when visitors contact us, enquire about services, apply for training, or apply for jobs.</p>
       <h2>What we collect</h2>
       <ul>
         <li>Contact details such as name, email, phone number and message content.</li>
-        <li>Booking information from Calendly or other scheduling tools.</li>
+        <li>Booking information submitted through Calendly.</li>
         <li>Career application details, including CV uploads or links.</li>
-        <li>Technical information such as browser type, pages viewed, and IP address when needed for security and analytics.</li>
+        <li>Technical information such as IP address and request details when needed to operate and protect the website and forms.</li>
       </ul>
       <h2>Why we use it</h2>
-      <p>We use personal data to answer enquiries, provide services, schedule consultations, manage training applications, assess job applications, and improve our website and communications.</p>
+      <p>We use personal information to respond to enquiries, provide requested services, arrange consultations, manage training applications, assess job applications, operate the website, and protect our forms from abuse.</p>
       <h2>Lawful basis</h2>
       <p>We rely on consent, contract performance, legitimate business interests, and legal requirements where applicable. We will not process data beyond what is necessary for the stated purpose.</p>
       <h2>Who we share it with</h2>
-      <p>We may share data with hosting providers, email delivery providers, scheduling providers, and analytics tools where needed. We may also share limited information required by law or a regulator.</p>
-      <p><strong>[TO CONFIRM]</strong> Confirm the final list of third parties including Brevo, Calendly, Cloudflare, analytics provider, and any CRM or storage tool.</p>
+      <ul>
+        <li><strong>Cloudflare:</strong> website hosting, network security, form security checks and related technical operations.</li>
+        <li><strong>Brevo:</strong> delivery of form notifications and email replies, including CV attachments when submitted with a job application.</li>
+        <li><strong>Calendly:</strong> scheduling consultations when you choose to use the booking service.</li>
+      </ul>
+      <p>The deployed pages attempt to request the Cloudflare Web Analytics beacon from static.cloudflareinsights.com, but the site's Content Security Policy blocks that request, so the beacon does not load. We do not currently use a separate CRM, external file-storage, or advertising-pixel service on this website. We may disclose information when required by law or a competent authority.</p>
       <h2>International transfers</h2>
-      <p>Where data is processed outside Nigeria, we will put appropriate safeguards in place and only transfer information where needed for delivery or support.</p>
+      <p>Cloudflare, Brevo, and Calendly may process information in countries outside Nigeria. When you use the website, submit a form, or book a consultation, information needed for that service may be processed by the relevant provider under its own privacy terms and retention practices.</p>
       <h2>Retention</h2>
-      <p><strong>[TO CONFIRM]</strong> Confirm data retention periods for enquiries, applications, training records, and website logs.</p>
+      <p>Daybytes' routine retention period for enquiries, job applications and CVs, training records, and security logs under our control is one month. This period does not set retention periods for copies or operational records held by Cloudflare, Brevo, or Calendly under their own terms.</p>
       <h2>Your rights</h2>
       <p>Visitors may request access, correction, deletion, restriction, objection, or withdrawal of consent where applicable. If you are in the UK or EU, you may also have GDPR rights. To exercise any request, contact us at <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
       <h2>Complaints</h2>
       <p>If you want to complain to the Nigeria Data Protection Commission, you can do so through the official channels and also contact us first so we can try to resolve the issue.</p>
       <h2>Contact</h2>
       <p>{site.legalName}<br />{site.address.street}<br />{site.address.locality}, {site.address.region}<br /><a href={`mailto:${site.email}`}>{site.email}</a><br /><a href={site.phone.href}>{site.phone.display}</a></p>
+      <p class="mt-10 border-t border-line pt-4 text-sm text-muted">Last updated: 24 October 2026</p>
     </div>
   </section>
 </BaseLayout>
