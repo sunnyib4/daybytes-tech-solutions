@@ -1,5 +1,7 @@
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from 'motion/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { site } from '@/data/site';
+import { externalLinkAttributes } from '@/lib/external-links.js';
 
 /**
  * Numbered project cards that stack on scroll: each card sticks a little lower
@@ -97,12 +99,11 @@ function Card({
             {project.liveUrl && (
               <a
                 href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                {...externalLinkAttributes(project.liveUrl, site.url)}
                 className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-ink px-4 py-2 font-mono text-[13px] text-ink no-underline transition-colors hover:bg-ink hover:text-surface"
               >
                 Live site <span aria-hidden="true">↗</span>
-                <span className="sr-only">for {project.title} (opens the client's website)</span>
+                {externalLinkAttributes(project.liveUrl, site.url).target && <span className="sr-only">for {project.title} (opens in a new tab)</span>}
               </a>
             )}
             <a href={project.href} className="btn-accent gap-2 rounded-full px-4 py-2 font-mono text-[13px] font-normal">

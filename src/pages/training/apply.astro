@@ -4,6 +4,7 @@ import PageHero from '@/components/sections/PageHero.astro';
 import AjaxForm from '@/components/forms/AjaxForm.astro';
 import Field from '@/components/forms/Field.astro';
 import { site } from '@/data/site';
+import { externalLinkAttributes } from '@/lib/external-links.js';
 import { getPrograms } from '@/lib/content';
 
 const programs = await getPrograms();
@@ -96,7 +97,7 @@ const programs = await getPrograms();
         <div class="rounded-[18px] border border-line bg-surface p-7 sm:p-8">
           <h2 class="heading-serif m-0 mb-2 text-2xl">Questions first?</h2>
           <p class="m-0 mb-5 leading-relaxed text-muted">Call {site.phone.display} or book a free call and we'll help you choose.</p>
-          <a href={site.calendly} class="btn-accent w-full px-6 py-4">Book a free call</a>
+          <a href={site.calendly} {...externalLinkAttributes(site.calendly, site.url)} class="btn-accent w-full px-6 py-4">Book a free call <span class="sr-only">(opens in a new tab)</span></a>
         </div>
       </aside>
     </div>

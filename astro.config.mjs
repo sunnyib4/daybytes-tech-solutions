@@ -2,9 +2,36 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
+import { unified } from '@astrojs/markdown-remark';
 import tailwindcss from '@tailwindcss/vite';
 import { readdirSync, readFileSync } from 'node:fs';
 import { parse } from 'yaml';
+import { isExternalHref } from './src/lib/external-links.js';
+import { SITE_URL } from './src/lib/site-url.js';
+
+/** @type {(tree: any) => void} */
+const transformExternalLinks = (tree) => {
+  /** @param {any} node */
+  const visit = (node) => {
+    if (!node || typeof node !== 'object') return;
+    if (node.type === 'element' && node.tagName === 'a') {
+      const href = node.properties?.href;
+      if (isExternalHref(href, SITE_URL)) {
+        node.properties = { ...node.properties, target: '_blank', rel: ['noopener', 'noreferrer'] };
+        node.children ??= [];
+        node.children.push({
+          type: 'element',
+          tagName: 'span',
+          properties: { className: ['sr-only'] },
+          children: [{ type: 'text', value: ' (opens in a new tab)' }],
+        });
+      }
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(tree);
+};
+const rehypeExternalLinks = () => transformExternalLinks;
 
 /** @param {string} path */
 const readFrontmatter = (path) => {
@@ -42,6 +69,9 @@ export default defineConfig({
   site: 'https://daybytes.com',
   output: 'static',
   trailingSlash: 'ignore',
+  markdown: {
+    processor: unified({ rehypePlugins: [rehypeExternalLinks] }),
+  },
   integrations: [
     react(),
     sitemap({

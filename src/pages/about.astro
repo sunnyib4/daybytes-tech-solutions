@@ -12,6 +12,7 @@ import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import businessTechnologyIllustration from '@/assets/projects/vectorelements-lyKf9UWWrdg-unsplash.jpg';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
 import { site } from '@/data/site';
+import { externalLinkAttributes } from '@/lib/external-links.js';
 import { getServices, getTestimonials } from '@/lib/content';
 
 const [services, testimonials] = await Promise.all([getServices(), getTestimonials()]);
@@ -142,7 +143,7 @@ const values = ['Professionalism', 'Reliability', 'Attention to detail', 'Transp
         <p class="m-0 mb-6 text-lg leading-relaxed text-body">
           Tell us about your systems, your goals, or the problem that keeps coming back. The first call is free.
         </p>
-        <a href={site.calendly} class="btn-accent px-7 py-4 text-lg">Book a free call</a>
+        <a href={site.calendly} {...externalLinkAttributes(site.calendly, site.url)} class="btn-accent px-7 py-4 text-lg">Book a free call <span class="sr-only">(opens in a new tab)</span></a>
       </div>
       <ConsultCard class="min-w-0 flex-[1_1_380px]" />
     </div>

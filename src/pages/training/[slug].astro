@@ -7,6 +7,7 @@ import PageHero from '@/components/sections/PageHero.astro';
 import ProgramCard from '@/components/training/ProgramCard.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
 import { site } from '@/data/site';
+import { externalLinkAttributes } from '@/lib/external-links.js';
 import { formatDate, formatLabel, getPrograms, render } from '@/lib/content';
 
 export const getStaticPaths = (async () => {
@@ -59,7 +60,7 @@ const schema = {
   >
     <div class="mt-9 flex flex-wrap gap-3.5">
       <a href={applyHref} class="btn-accent px-7 py-4 text-lg">Apply / Enrol</a>
-      <a href={site.calendly} class="btn-dark px-7 py-4 text-lg font-normal">Ask us a question</a>
+      <a href={site.calendly} {...externalLinkAttributes(site.calendly, site.url)} class="btn-dark px-7 py-4 text-lg font-normal">Ask us a question <span class="sr-only">(opens in a new tab)</span></a>
     </div>
   </PageHero>
 

@@ -1,5 +1,6 @@
 ---
 import { site } from '@/data/site';
+import { externalLinkAttributes } from '@/lib/external-links.js';
 import { getServices } from '@/lib/content';
 import Logo from './Logo.astro';
 
@@ -35,14 +36,14 @@ const headingClass = 'm-0 mb-1 font-mono text-xs tracking-[.08em] text-white';
       </div>
       <div class="flex flex-col gap-2.5">
         <h2 class={headingClass}>CONTACT</h2>
-        <a href={site.phone.href} target="_blank" rel="noopener noreferrer" class={linkClass}>{site.phone.display}</a>
-        <a href={`mailto:${site.email}`} target="_blank" rel="noopener noreferrer" class={linkClass}>{site.email}</a>
-        <a href={site.calendly} target="_blank" rel="noopener noreferrer" class={linkClass}>Book a free call</a>
+        <a href={site.phone.href} {...externalLinkAttributes(site.phone.href, site.url)} class={linkClass}>{site.phone.display}</a>
+        <a href={`mailto:${site.email}`} class={linkClass}>{site.email}</a>
+        <a href={site.calendly} {...externalLinkAttributes(site.calendly, site.url)} class={linkClass}>Book a free call <span class="sr-only">(opens in a new tab)</span></a>
         <p class="m-0 leading-relaxed">{site.address.locality}, {site.address.region}</p>
       </div>
       <div class="flex flex-col gap-2.5">
         <h2 class={headingClass}>CONNECT</h2>
-        {site.socials.map((s) => <a href={s.href} target="_blank" rel="me noopener noreferrer" class={linkClass}>{s.label}</a>)}
+        {site.socials.map((s) => <a href={s.href} {...externalLinkAttributes(s.href, site.url, 'me')} class={linkClass}>{s.label}<span class="sr-only"> (opens in a new tab)</span></a>)}
       </div>
     </div>
     <div class="mt-14 flex flex-wrap justify-between gap-3 text-[13px] text-[#B5ADA5]">

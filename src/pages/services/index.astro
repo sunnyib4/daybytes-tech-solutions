@@ -6,6 +6,7 @@ import Testimonials from '@/components/sections/Testimonials.astro';
 import ServiceCard from '@/components/ui/ServiceCard.astro';
 import ConsultCard from '@/components/ui/ConsultCard.astro';
 import { site } from '@/data/site';
+import { externalLinkAttributes } from '@/lib/external-links.js';
 import { getServices, getTestimonials } from '@/lib/content';
 
 const [services, testimonials] = await Promise.all([getServices(), getTestimonials()]);
@@ -23,7 +24,7 @@ const [services, testimonials] = await Promise.all([getServices(), getTestimonia
     breadcrumbs={[{ label: 'Services', href: '/services' }]}
   >
     <div class="mt-9 flex flex-wrap gap-3.5">
-      <a href={site.calendly} class="btn-accent px-7 py-4 text-lg">Book a free call</a>
+      <a href={site.calendly} {...externalLinkAttributes(site.calendly, site.url)} class="btn-accent px-7 py-4 text-lg">Book a free call <span class="sr-only">(opens in a new tab)</span></a>
       <a href="/contact" class="btn-dark px-7 py-4 text-lg font-normal">Request a service</a>
     </div>
   </PageHero>

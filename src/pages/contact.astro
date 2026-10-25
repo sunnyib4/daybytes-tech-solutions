@@ -5,6 +5,7 @@ import FaqList from '@/components/ui/FaqList.astro';
 import AjaxForm from '@/components/forms/AjaxForm.astro';
 import Field from '@/components/forms/Field.astro';
 import { site } from '@/data/site';
+import { externalLinkAttributes } from '@/lib/external-links.js';
 import { getFaqs, getServices } from '@/lib/content';
 
 const [services, faqs] = await Promise.all([getServices(), getFaqs()]);
@@ -87,7 +88,7 @@ const faqSchema = {
         <div class="rounded-[18px] border border-line bg-surface p-7 sm:p-8">
           <h2 class="heading-serif m-0 mb-2 text-2xl">Prefer to talk?</h2>
           <p class="m-0 mb-5 leading-relaxed text-muted">Book a free call with an expert. Pick a time that works for you.</p>
-          <a href={site.calendly} class="btn-accent w-full px-6 py-4">Book a free call</a>
+          <a href={site.calendly} {...externalLinkAttributes(site.calendly, site.url)} class="btn-accent w-full px-6 py-4">Book a free call <span class="sr-only">(opens in a new tab)</span></a>
         </div>
       </div>
     </div>
@@ -98,7 +99,7 @@ const faqSchema = {
     <div class="mx-auto max-w-[1100px]">
       <h2 id="book-title" class="heading-serif m-0 mb-2 text-[32px]">Book a free call</h2>
       <p class="m-0 mb-6 text-muted">
-        Calendar not loading? <a href={site.calendly} class="link">Open the booking page on Calendly</a>.
+        Calendar not loading? <a href={site.calendly} {...externalLinkAttributes(site.calendly, site.url)} class="link">Open the booking page on Calendly<span class="sr-only"> (opens in a new tab)</span></a>.
       </p>
       <button
         type="button"

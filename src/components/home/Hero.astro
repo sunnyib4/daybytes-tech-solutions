@@ -1,5 +1,6 @@
 ---
 import { site } from '@/data/site';
+import { externalLinkAttributes } from '@/lib/external-links.js';
 import HeroSphere from './HeroSphere';
 import ProblemCarousel from './ProblemCarousel.astro';
 ---
@@ -15,7 +16,7 @@ import ProblemCarousel from './ProblemCarousel.astro';
         We help businesses and individuals streamline systems, reduce tech friction, and make smarter choices with proven IT solutions.
       </p>
       <div class="mt-9 flex flex-wrap gap-3.5">
-        <a href={site.calendly} class="btn-accent px-[30px] py-[18px] text-lg">Book a free call</a>
+        <a href={site.calendly} {...externalLinkAttributes(site.calendly, site.url)} class="btn-accent px-[30px] py-[18px] text-lg">Book a free call <span class="sr-only">(opens in a new tab)</span></a>
         <a href="/contact" class="btn-dark px-[30px] py-[18px] text-lg font-normal">Tell us what you need</a>
       </div>
       <div class="mt-14">

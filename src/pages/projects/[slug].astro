@@ -7,6 +7,8 @@ import { Image } from 'astro:assets';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/sections/PageHero.astro';
 import ConsultCard from '@/components/ui/ConsultCard.astro';
+import { site } from '@/data/site';
+import { externalLinkAttributes } from '@/lib/external-links.js';
 import { formatDate, getProjects, render } from '@/lib/content';
 
 export const getStaticPaths = (async () => {
@@ -87,8 +89,8 @@ const schema = {
           <div>
             <dt class="label-mono mb-1 text-subtle">Live site</dt>
             <dd class="m-0 font-medium">
-              <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="link">
-                {new URL(liveUrl).hostname} <span aria-hidden="true">↗</span>
+              <a href={liveUrl} {...externalLinkAttributes(liveUrl, site.url)} class="link">
+                {new URL(liveUrl).hostname} <span aria-hidden="true">↗</span>{externalLinkAttributes(liveUrl, site.url).target && <span class="sr-only"> (opens in a new tab)</span>}
               </a>
             </dd>
           </div>
@@ -112,12 +114,12 @@ const schema = {
     {
       liveUrl && (
         <div class="mt-8 flex flex-wrap gap-3">
-          <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="btn-accent rounded-full px-5 py-3.5 text-base font-medium">
-            Visit live site
+          <a href={liveUrl} {...externalLinkAttributes(liveUrl, site.url)} class="btn-accent rounded-full px-5 py-3.5 text-base font-medium">
+            Visit live site {externalLinkAttributes(liveUrl, site.url).target && <span class="sr-only">(opens in a new tab)</span>}
           </a>
           {codeUrl && (
-            <a href={codeUrl} target="_blank" rel="noopener noreferrer" class="btn-dark rounded-full px-5 py-3.5 text-base font-medium">
-              View code
+            <a href={codeUrl} {...externalLinkAttributes(codeUrl, site.url)} class="btn-dark rounded-full px-5 py-3.5 text-base font-medium">
+              View code {externalLinkAttributes(codeUrl, site.url).target && <span class="sr-only">(opens in a new tab)</span>}
             </a>
           )}
         </div>
