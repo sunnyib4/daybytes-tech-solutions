@@ -12,8 +12,8 @@
     "BREVO_CONTACT_TO": "info@daybytes.com",
     "BREVO_TRAINING_TO": "info@daybytes.com",
     "BREVO_CAREERS_TO": "info@daybytes.com",
-    "CHAT_ENABLED": "false",
-    "AI_ENABLED": "false",
+    "CHAT_ENABLED": "true",
+    "AI_ENABLED": "true",
     "GROQ_MODEL": "openai/gpt-oss-20b",
     "GROQ_FALLBACK_MODEL": "openai/gpt-oss-120b",
     "TELEGRAM_CHAT_ID": ""
