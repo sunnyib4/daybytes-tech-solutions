@@ -45,19 +45,27 @@ const faqSchema = {
   <Stats />
 
   <!-- SERVICES -->
-  <section aria-labelledby="services-title" class="px-4 pt-14 pb-24 sm:px-6">
-    <div class="mx-auto max-w-[1200px]">
-      <div class="mb-8 flex flex-wrap items-end justify-between gap-5">
-        <div class="max-w-[720px]">
-          <SectionHeading id="services-title" class="sm:text-[64px]">What we do</SectionHeading>
-          <p class="mt-3 mb-0 max-w-[680px] text-base leading-relaxed text-body sm:text-[20px]">
-            Practical technology support and growth solutions designed to help your business run smoother, scale faster, and stay future-ready.
-          </p>
-        </div>
-        <a href="/contact" class="inline-flex items-center justify-center rounded-full bg-[#8fe7c0] px-7 py-3.5 text-base font-medium text-[#1a1714] shadow-[0_12px_28px_rgba(80,166,122,0.18)] transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_30px_rgba(80,166,122,0.22)]">Get Started</a>
+  <section aria-labelledby="services-title" class="bg-[#dfe6f1] px-4 py-14 sm:px-6">
+    <div class="mx-auto max-w-[1240px] rounded-[18px] border border-[#b8c0ca] bg-[#f3f3f3] p-5 sm:p-8 lg:p-10">
+      <div class="mb-8 flex justify-center">
+        <span class="inline-flex items-center gap-2 rounded-full border border-[#7d5ae6] bg-[#f6f3ff] px-4 py-2 text-sm font-medium text-[#5d43d0] shadow-[0_0_0_1px_rgba(125,90,230,0.1)]">
+          <span aria-hidden="true" class="text-base">✦</span>
+          Our Services
+        </span>
       </div>
-      <ul data-reveal-stagger class="m-0 grid list-none grid-cols-1 gap-5 p-0 md:grid-cols-2 xl:grid-cols-3">
-        {services.map((s) => <li class="h-full"><ServiceCard service={s} variant="feature" /></li>)}
+
+      <SectionHeading id="services-title" class="text-center sm:text-[64px]">Our Palette of Expertise</SectionHeading>
+
+      <ul data-reveal-stagger class="m-0 mt-10 grid list-none grid-cols-1 gap-5 p-0 md:grid-cols-2 xl:grid-cols-3">
+        {services.map((s, index) => (
+          <li class="h-full">
+            <ServiceCard
+              service={s}
+              variant="feature"
+              class={index === 0 ? 'border-[#6d47dc] bg-[#6d47dc] text-white shadow-[0_22px_40px_rgba(109,71,220,0.22)] hover:border-[#5c38c8] hover:shadow-[0_22px_40px_rgba(109,71,220,0.28)] [&_h3]:text-white [&_p]:text-white [&_span]:text-white [&_.icon-wrap]:bg-[#18181a]' : ''}
+            />
+          </li>
+        ))}
       </ul>
     </div>
   </section>

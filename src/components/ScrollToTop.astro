@@ -21,11 +21,14 @@
     if (!button) return;
 
     const syncVisibility = () => {
-      button.style.opacity = '1';
-      button.style.visibility = 'visible';
+      const shouldShow = window.scrollY > 600;
+      button.hidden = !shouldShow;
+      button.style.opacity = shouldShow ? '1' : '0';
+      button.style.visibility = shouldShow ? 'visible' : 'hidden';
     };
 
     syncVisibility();
+    window.addEventListener('scroll', syncVisibility, { passive: true, signal });
     button.addEventListener('click', () => {
       window.scrollTo({
         top: 0,
