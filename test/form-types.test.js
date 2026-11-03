@@ -19,6 +19,8 @@ test('worker schemas and every AjaxForm caller use the shared form type list', (
     .map((path) => ({ path, source: readFileSync(path, 'utf8') }))
     .filter(({ source }) => source.includes('<AjaxForm'));
   const sentTypes = callers.flatMap(({ source }) => [...source.matchAll(/\bform="([^"]+)"/g)].map((match) => match[1]));
+  const directTypes = [...readFileSync('src/components/ChatWidget.astro', 'utf8').matchAll(/name="form_name" value="([^"]+)"/g)].map((match) => match[1]);
+  sentTypes.push(...directTypes);
 
   assert.deepEqual([...new Set(sentTypes)].sort(), [...FORM_TYPES].sort());
   for (const formType of sentTypes) assert.ok(FORM_TYPES.includes(formType), `${formType} is not a supported form type`);

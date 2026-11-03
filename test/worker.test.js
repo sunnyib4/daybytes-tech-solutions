@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import worker from '../src/worker.js';
 import FORM_TYPES from '../src/lib/form-types.js';
 import { signStartedAt } from '../src/lib/worker/forms.js';
+import { CHAT_PROMPT_VERSION, signChatSession } from '../src/lib/worker/chat.js';
 
 const env = {
   ENVIRONMENT: 'development',
@@ -27,13 +28,18 @@ const formFor = async (formType) => {
     started_proof: await signStartedAt(startedAt, env.TURNSTILE_SECRET_KEY),
     'cf-turnstile-response': '',
   })) form.set(name, value);
-  form.append('cf-turnstile-response', 'test-token');
+  if (formType !== 'chat-lead') form.append('cf-turnstile-response', 'test-token');
+  else form.delete('cf-turnstile-response');
   if (formType === 'contact') {
     form.set('service', 'it-support');
     form.set('message', 'Worker smoke test');
   } else if (formType === 'training') {
     form.set('program', 'backend-development');
     form.set('as', 'individual');
+  } else if (formType === 'chat-lead') {
+    form.set('message', 'I would like to know more.');
+    form.set('page_url', 'https://daybytes.com/contact/');
+    form.set('transcript', JSON.stringify([{ role: 'user', content: 'I would like to know more.' }]));
   } else {
     form.set('role', 'general');
     form.set('cv_link', 'https://example.com/cv.pdf');
@@ -112,6 +118,23 @@ test('production robots comes from ASSETS with no noindex header', async () => {
   assert.equal(response.headers.get('X-Robots-Tag'), null);
 });
 
+test('verification paths always receive private no-store and noindex headers, including misses', async () => {
+  for (const path of ['/verify/3gzc55rgaz', '/verify/unknown', '/verify/nested/unknown']) {
+    const response = await worker.fetch(new Request(`https://daybytes.com${path}`), env);
+    assert.equal(response.headers.get('X-Robots-Tag'), 'noindex, nofollow, noarchive', path);
+    assert.equal(response.headers.get('Cache-Control'), 'private, no-store', path);
+  }
+
+  const missing = await worker.fetch(new Request('https://daybytes.com/verify/unknown'), {
+    ...env,
+    ASSETS: { fetch: async () => new Response('custom 404', { status: 404 }) },
+  });
+  assert.equal(missing.status, 404);
+  assert.equal(await missing.text(), 'custom 404');
+  assert.equal(missing.headers.get('X-Robots-Tag'), 'noindex, nofollow, noarchive');
+  assert.equal(missing.headers.get('Cache-Control'), 'private, no-store');
+});
+
 test('test-brevo is not a public Worker mail-sending route', async () => {
   const response = await worker.fetch(new Request('https://daybytes-tech-solutions.daybytestech.workers.dev/test-brevo'), env);
   assert.equal(response.status, 200, 'the static fallback serves the not-found page');
@@ -124,6 +147,53 @@ test('config endpoint returns public key and signed form start proof', async () 
   assert.equal(response.status, 200);
   assert.equal(payload.siteKey, env.TURNSTILE_SITE_KEY);
   assert.equal(await signStartedAt(payload.startedAt, env.TURNSTILE_SECRET_KEY), payload.startedProof);
+});
+
+test('chat-lead config returns signed timing fields without requiring a site key', async () => {
+  const response = await worker.fetch(new Request('https://daybytes.com/api/config?formType=chat-lead'), {
+    ...env,
+    CHAT_ENABLED: 'true',
+    TURNSTILE_SITE_KEY: undefined,
+  });
+  const payload = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(await signStartedAt(payload.startedAt, env.TURNSTILE_SECRET_KEY), payload.startedProof);
+  assert.equal(Object.hasOwn(payload, 'siteKey'), false);
+});
+
+test('chat kill switch returns 404 for widget config and chat endpoint', async () => {
+  const disabledEnv = { ...env, CHAT_ENABLED: 'false' };
+  const config = await worker.fetch(new Request('https://daybytes.com/api/config?formType=chat-lead'), disabledEnv);
+  assert.equal(config.status, 404);
+  const response = await worker.fetch(new Request('https://daybytes.com/api/chat', { method: 'POST', body: '{}' }), disabledEnv);
+  assert.equal(response.status, 404);
+});
+
+test('chat endpoint returns lead mode when AI is disabled, and does not disclose prompt or API key', async () => {
+  const response = await worker.fetch(new Request('https://daybytes.com/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Origin: 'https://daybytes.com' },
+    body: JSON.stringify({ messages: [{ role: 'user', content: 'What services do you offer?' }], sessionProof: await signChatSession(String(Date.now() - 1000), env.TURNSTILE_SECRET_KEY) }),
+  }), { ...env, CHAT_ENABLED: 'true', AI_ENABLED: 'false', GROQ_API_KEY: 'do-not-disclose' });
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body.mode, 'lead');
+  assert.equal(body.showLeadForm, true);
+  assert.equal(JSON.stringify(body).includes('do-not-disclose'), false);
+  assert.equal(JSON.stringify(body).includes(CHAT_PROMPT_VERSION), true);
+});
+
+test('chat first message uses the per-IP limiter and server session proof without Turnstile', async () => {
+  const response = await worker.fetch(new Request('https://daybytes.com/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Origin: 'https://daybytes.com' },
+    body: JSON.stringify({ messages: [{ role: 'user', content: 'What are your hours?' }] }),
+  }), { ...env, CHAT_ENABLED: 'true', AI_ENABLED: 'false' });
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body.mode, 'lead');
+  assert.ok(body.sessionProof);
+  assert.notEqual(body.reason, 'verification-required');
 });
 
 test('missing form configuration names each missing binding in Worker logs only', async () => {
@@ -220,6 +290,36 @@ test('every browser form submission uses multipart form_name and succeeds in con
       assert.equal(response.status, 200, `${formType}: ${JSON.stringify(payload)}`);
       assert.deepEqual(payload, { ok: true });
     }
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('chat-lead submits without Turnstile while tokenless contact remains rejected', async () => {
+  const originalFetch = globalThis.fetch;
+  let siteverifyCalls = 0;
+  globalThis.fetch = async (url) => {
+    if (String(url).includes('siteverify')) siteverifyCalls += 1;
+    throw new Error(`Unexpected upstream request ${url}`);
+  };
+  try {
+    const chatLead = await formFor('chat-lead');
+    assert.equal(chatLead.has('cf-turnstile-response'), false);
+    const response = await worker.fetch(new Request('https://daybytes.com/api/submit', {
+      method: 'POST',
+      body: chatLead,
+    }), env);
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { ok: true });
+    assert.equal(siteverifyCalls, 0);
+
+    const contact = await formFor('contact');
+    contact.delete('cf-turnstile-response');
+    const contactResponse = await worker.fetch(new Request('https://daybytes.com/api/submit', {
+      method: 'POST',
+      body: contact,
+    }), env);
+    assert.equal(contactResponse.status, 400);
   } finally {
     globalThis.fetch = originalFetch;
   }

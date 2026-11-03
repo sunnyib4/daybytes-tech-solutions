@@ -27,6 +27,11 @@ const makeForm = (formType = 'contact', overrides = {}) => {
   if (formType === 'contact') {
     data.set('service', overrides.service ?? 'it-support');
     data.set('message', overrides.message ?? 'Please call me.');
+  } else if (formType === 'chat-lead') {
+    data.set('message', overrides.message ?? 'Please contact me.');
+    data.set('page_url', overrides.page_url ?? 'https://daybytes.com/contact/');
+    data.set('transcript', overrides.transcript ?? JSON.stringify([{ role: 'user', content: 'Please contact me.' }]));
+    if (!Object.hasOwn(overrides, 'cf-turnstile-response')) data.delete('cf-turnstile-response');
   } else if (formType === 'training') {
     data.set('program', overrides.program ?? 'backend-development');
     data.set('as', overrides.as ?? 'individual');
@@ -43,6 +48,13 @@ test('parses all supported form types', () => {
     assert.equal(result.ok, true, `${formType}: ${JSON.stringify(result)}`);
     assert.equal(result.formType, formType);
   }
+});
+
+test('chat-lead parsing does not require Turnstile, while contact still does', () => {
+  assert.equal(parseSubmission(makeForm('chat-lead')).ok, true);
+  const contact = makeForm('contact');
+  contact.delete('cf-turnstile-response');
+  assert.equal(parseSubmission(contact).ok, false);
 });
 
 test('rejects invalid email and missing consent', () => {

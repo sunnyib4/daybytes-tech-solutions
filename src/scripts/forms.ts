@@ -5,12 +5,9 @@
 import { onPageLoad } from './lifecycle';
 import { site } from '@/data/site';
 import FORM_TYPES from '@/lib/form-types.js';
+import type { TurnstileApi } from '@/lib/turnstile-types';
 
 type Control = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
-type TurnstileApi = {
-  render: (container: HTMLElement, options: { sitekey: string; callback: (token: string) => void; 'expired-callback': () => void; 'error-callback': () => void }) => string;
-  reset: (widgetId?: string) => void;
-};
 
 declare global {
   interface Window { turnstile?: TurnstileApi; }

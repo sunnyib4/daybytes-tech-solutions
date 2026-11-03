@@ -1,0 +1,446 @@
+[
+  {
+    "route": "/",
+    "reducedMotion": "no-preference",
+    "position": "start",
+    "scrollY": 4542,
+    "cards": [
+      {
+        "index": 1,
+        "title": "Bobsam Groups",
+        "transform": "matrix(0.980313, 0, 0, 0.980313, 0, 0)",
+        "top": -350,
+        "opacity": "1"
+      },
+      {
+        "index": 2,
+        "title": "Bobsam Shop",
+        "transform": "none",
+        "top": 500,
+        "opacity": "1"
+      },
+      {
+        "index": 3,
+        "title": "Pushback",
+        "transform": "none",
+        "top": 1350,
+        "opacity": "1"
+      },
+      {
+        "index": 4,
+        "title": "Win Vision Art",
+        "transform": "none",
+        "top": 2200,
+        "opacity": "1"
+      }
+    ],
+    "screenshot": "screenshots/recent-projects-motion-diagnostic/home-no-preference-start.png"
+  },
+  {
+    "route": "/",
+    "reducedMotion": "no-preference",
+    "position": "middle",
+    "scrollY": 7218,
+    "cards": [
+      {
+        "index": 1,
+        "title": "Bobsam Groups",
+        "transform": "matrix(0.865, 0, 0, 0.865, 0, 0)",
+        "top": -3026,
+        "opacity": "1"
+      },
+      {
+        "index": 2,
+        "title": "Bobsam Shop",
+        "transform": "matrix(0.91, 0, 0, 0.91, 0, 0)",
+        "top": -2176,
+        "opacity": "1"
+      },
+      {
+        "index": 3,
+        "title": "Pushback",
+        "transform": "matrix(0.955, 0, 0, 0.955, 0, 0)",
+        "top": -1326,
+        "opacity": "1"
+      },
+      {
+        "index": 4,
+        "title": "Win Vision Art",
+        "transform": "none",
+        "top": -476,
+        "opacity": "1"
+      }
+    ],
+    "screenshot": "screenshots/recent-projects-motion-diagnostic/home-no-preference-middle.png"
+  },
+  {
+    "route": "/",
+    "reducedMotion": "no-preference",
+    "position": "end",
+    "scrollY": 9573,
+    "cards": [
+      {
+        "index": 1,
+        "title": "Bobsam Groups",
+        "transform": "matrix(0.865, 0, 0, 0.865, 0, 0)",
+        "top": -5381,
+        "opacity": "1"
+      },
+      {
+        "index": 2,
+        "title": "Bobsam Shop",
+        "transform": "matrix(0.91, 0, 0, 0.91, 0, 0)",
+        "top": -4531,
+        "opacity": "1"
+      },
+      {
+        "index": 3,
+        "title": "Pushback",
+        "transform": "matrix(0.955, 0, 0, 0.955, 0, 0)",
+        "top": -3681,
+        "opacity": "1"
+      },
+      {
+        "index": 4,
+        "title": "Win Vision Art",
+        "transform": "none",
+        "top": -2831,
+        "opacity": "1"
+      }
+    ],
+    "screenshot": "screenshots/recent-projects-motion-diagnostic/home-no-preference-end.png"
+  },
+  {
+    "route": "/",
+    "reducedMotion": "reduce",
+    "position": "start",
+    "scrollY": 4491,
+    "cards": [
+      {
+        "index": 1,
+        "title": "Bobsam Groups",
+        "transform": "none",
+        "top": -299,
+        "opacity": "1"
+      },
+      {
+        "index": 2,
+        "title": "Bobsam Shop",
+        "transform": "none",
+        "top": 467,
+        "opacity": "1"
+      },
+      {
+        "index": 3,
+        "title": "Pushback",
+        "transform": "none",
+        "top": 1215,
+        "opacity": "1"
+      },
+      {
+        "index": 4,
+        "title": "Win Vision Art",
+        "transform": "none",
+        "top": 1981,
+        "opacity": "1"
+      }
+    ],
+    "screenshot": "screenshots/recent-projects-motion-diagnostic/home-reduce-start.png"
+  },
+  {
+    "route": "/",
+    "reducedMotion": "reduce",
+    "position": "middle",
+    "scrollY": 7001,
+    "cards": [
+      {
+        "index": 1,
+        "title": "Bobsam Groups",
+        "transform": "none",
+        "top": -2809,
+        "opacity": "1"
+      },
+      {
+        "index": 2,
+        "title": "Bobsam Shop",
+        "transform": "none",
+        "top": -2043,
+        "opacity": "1"
+      },
+      {
+        "index": 3,
+        "title": "Pushback",
+        "transform": "none",
+        "top": -1295,
+        "opacity": "1"
+      },
+      {
+        "index": 4,
+        "title": "Win Vision Art",
+        "transform": "none",
+        "top": -529,
+        "opacity": "1"
+      }
+    ],
+    "screenshot": "screenshots/recent-projects-motion-diagnostic/home-reduce-middle.png"
+  },
+  {
+    "route": "/",
+    "reducedMotion": "reduce",
+    "position": "end",
+    "scrollY": 9177,
+    "cards": [
+      {
+        "index": 1,
+        "title": "Bobsam Groups",
+        "transform": "none",
+        "top": -4985,
+        "opacity": "1"
+      },
+      {
+        "index": 2,
+        "title": "Bobsam Shop",
+        "transform": "none",
+        "top": -4219,
+        "opacity": "1"
+      },
+      {
+        "index": 3,
+        "title": "Pushback",
+        "transform": "none",
+        "top": -3471,
+        "opacity": "1"
+      },
+      {
+        "index": 4,
+        "title": "Win Vision Art",
+        "transform": "none",
+        "top": -2705,
+        "opacity": "1"
+      }
+    ],
+    "screenshot": "screenshots/recent-projects-motion-diagnostic/home-reduce-end.png"
+  },
+  {
+    "route": "/projects/",
+    "reducedMotion": "no-preference",
+    "position": "start",
+    "scrollY": 693,
+    "cards": [
+      {
+        "index": 1,
+        "title": "Bobsam Groups",
+        "transform": "matrix(0.988067, 0, 0, 0.988067, 0, 0)",
+        "top": -162.08,
+        "opacity": "1"
+      },
+      {
+        "index": 2,
+        "title": "Bobsam Shop",
+        "transform": "none",
+        "top": 687.92,
+        "opacity": "1"
+      },
+      {
+        "index": 3,
+        "title": "Pushback",
+        "transform": "none",
+        "top": 1537.92,
+        "opacity": "1"
+      },
+      {
+        "index": 4,
+        "title": "Win Vision Art",
+        "transform": "none",
+        "top": 2387.92,
+        "opacity": "1"
+      }
+    ],
+    "screenshot": "screenshots/recent-projects-motion-diagnostic/projects-no-preference-start.png"
+  },
+  {
+    "route": "/projects/",
+    "reducedMotion": "no-preference",
+    "position": "middle",
+    "scrollY": 1898,
+    "cards": [
+      {
+        "index": 1,
+        "title": "Bobsam Groups",
+        "transform": "matrix(0.921804, 0, 0, 0.921804, 0, 0)",
+        "top": -1367.08,
+        "opacity": "1"
+      },
+      {
+        "index": 2,
+        "title": "Bobsam Shop",
+        "transform": "matrix(0.960493, 0, 0, 0.960493, 0, 0)",
+        "top": -517.08,
+        "opacity": "1"
+      },
+      {
+        "index": 3,
+        "title": "Pushback",
+        "transform": "matrix(0.99287, 0, 0, 0.99287, 0, 0)",
+        "top": 332.92,
+        "opacity": "1"
+      },
+      {
+        "index": 4,
+        "title": "Win Vision Art",
+        "transform": "none",
+        "top": 1182.92,
+        "opacity": "1"
+      }
+    ],
+    "screenshot": "screenshots/recent-projects-motion-diagnostic/projects-no-preference-middle.png"
+  },
+  {
+    "route": "/projects/",
+    "reducedMotion": "no-preference",
+    "position": "end",
+    "scrollY": 3042,
+    "cards": [
+      {
+        "index": 1,
+        "title": "Bobsam Groups",
+        "transform": "matrix(0.865, 0, 0, 0.865, 0, 0)",
+        "top": -2511.08,
+        "opacity": "1"
+      },
+      {
+        "index": 2,
+        "title": "Bobsam Shop",
+        "transform": "matrix(0.91, 0, 0, 0.91, 0, 0)",
+        "top": -1661.08,
+        "opacity": "1"
+      },
+      {
+        "index": 3,
+        "title": "Pushback",
+        "transform": "matrix(0.955, 0, 0, 0.955, 0, 0)",
+        "top": -811.08,
+        "opacity": "1"
+      },
+      {
+        "index": 4,
+        "title": "Win Vision Art",
+        "transform": "none",
+        "top": 38.92,
+        "opacity": "1"
+      }
+    ],
+    "screenshot": "screenshots/recent-projects-motion-diagnostic/projects-no-preference-end.png"
+  },
+  {
+    "route": "/projects/",
+    "reducedMotion": "reduce",
+    "position": "start",
+    "scrollY": 662,
+    "cards": [
+      {
+        "index": 1,
+        "title": "Bobsam Groups",
+        "transform": "none",
+        "top": -131.08,
+        "opacity": "1"
+      },
+      {
+        "index": 2,
+        "title": "Bobsam Shop",
+        "transform": "none",
+        "top": 634.92,
+        "opacity": "1"
+      },
+      {
+        "index": 3,
+        "title": "Pushback",
+        "transform": "none",
+        "top": 1382.92,
+        "opacity": "1"
+      },
+      {
+        "index": 4,
+        "title": "Win Vision Art",
+        "transform": "none",
+        "top": 2148.92,
+        "opacity": "1"
+      }
+    ],
+    "screenshot": "screenshots/recent-projects-motion-diagnostic/projects-reduce-start.png"
+  },
+  {
+    "route": "/projects/",
+    "reducedMotion": "reduce",
+    "position": "middle",
+    "scrollY": 1708,
+    "cards": [
+      {
+        "index": 1,
+        "title": "Bobsam Groups",
+        "transform": "none",
+        "top": -1177.08,
+        "opacity": "1"
+      },
+      {
+        "index": 2,
+        "title": "Bobsam Shop",
+        "transform": "none",
+        "top": -411.08,
+        "opacity": "1"
+      },
+      {
+        "index": 3,
+        "title": "Pushback",
+        "transform": "none",
+        "top": 336.92,
+        "opacity": "1"
+      },
+      {
+        "index": 4,
+        "title": "Win Vision Art",
+        "transform": "none",
+        "top": 1102.92,
+        "opacity": "1"
+      }
+    ],
+    "screenshot": "screenshots/recent-projects-motion-diagnostic/projects-reduce-middle.png"
+  },
+  {
+    "route": "/projects/",
+    "reducedMotion": "reduce",
+    "position": "end",
+    "scrollY": 2701,
+    "cards": [
+      {
+        "index": 1,
+        "title": "Bobsam Groups",
+        "transform": "none",
+        "top": -2170.08,
+        "opacity": "1"
+      },
+      {
+        "index": 2,
+        "title": "Bobsam Shop",
+        "transform": "none",
+        "top": -1404.08,
+        "opacity": "1"
+      },
+      {
+        "index": 3,
+        "title": "Pushback",
+        "transform": "none",
+        "top": -656.08,
+        "opacity": "1"
+      },
+      {
+        "index": 4,
+        "title": "Win Vision Art",
+        "transform": "none",
+        "top": 109.92,
+        "opacity": "1"
+      }
+    ],
+    "screenshot": "screenshots/recent-projects-motion-diagnostic/projects-reduce-end.png"
+  }
+]

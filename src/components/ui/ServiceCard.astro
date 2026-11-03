@@ -1,23 +1,45 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-interface Props { service: CollectionEntry<'services'>; headingLevel?: 'h2' | 'h3' }
-const { service, headingLevel: Heading = 'h3' } = Astro.props;
+
+interface Props {
+  service: CollectionEntry<'services'>;
+  headingLevel?: 'h2' | 'h3';
+  variant?: 'list' | 'feature';
+  class?: string;
+}
+
+const { service, headingLevel: Heading = 'h3', variant = 'list', class: className } = Astro.props;
 const { title, code, tag, summary } = service.data;
+const isFeature = variant === 'feature';
 ---
 
 <a
   href={`/services/${service.id}`}
-  class="group flex items-center gap-4 rounded-[14px] border border-line bg-surface px-4 py-[18px] text-ink no-underline transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[0_14px_34px_rgba(0,0,0,.1)] sm:gap-5 sm:px-5"
+  class:list={[
+    'group block text-ink no-underline transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5',
+    isFeature
+      ? 'h-full rounded-[28px] border border-[#e4dfd8] bg-[#f5f3f1] px-6 py-6 shadow-[0_2px_0_rgba(26,23,20,0.02)] hover:border-[#d7d0c8] hover:shadow-[0_16px_34px_rgba(0,0,0,0.08)] sm:px-7'
+      : 'flex items-center gap-4 rounded-[14px] border border-line bg-surface px-4 py-[18px] sm:gap-5 sm:px-5 hover:border-line-strong hover:shadow-[0_14px_34px_rgba(0,0,0,.1)]',
+    className,
+  ]}
 >
-  <div aria-hidden="true" class="flex size-14 shrink-0 items-center justify-center rounded-[10px] bg-tile font-mono text-lg text-accent sm:size-[72px] sm:text-[22px]">
+  <div
+    aria-hidden="true"
+    class:list={[
+      'flex shrink-0 items-center justify-center rounded-[12px] bg-[#f2f1ee] font-mono text-lg text-ink',
+      isFeature ? 'mb-6 size-14 text-[26px]' : 'size-14 sm:size-[72px] sm:text-[22px]',
+    ]}
+  >
     {code}
   </div>
-  <div class="min-w-0 flex-auto">
-    <Heading class="heading-serif m-0 text-lg sm:text-xl">{title}</Heading>
-    <span class="mt-1.5 inline-block rounded-md bg-tag-bg px-2 py-[3px] font-mono text-xs text-tag-ink">{tag}</span>
-    <p class="mt-2 mb-0 text-[15px] leading-normal text-muted">{summary}</p>
+
+  <div class:list={['min-w-0', isFeature ? 'flex h-full flex-col' : 'flex-auto']}>
+    <Heading class:list={['heading-serif m-0', isFeature ? 'text-[30px] leading-none text-ink' : 'text-lg sm:text-xl']}>{title}</Heading>
+    {!isFeature && <span class="mt-1.5 inline-block rounded-md bg-tag-bg px-2 py-[3px] font-mono text-xs text-tag-ink">{tag}</span>}
+    <p class:list={['m-0', isFeature ? 'mt-4 text-base leading-relaxed text-body' : 'mt-2 text-[15px] leading-normal text-muted']}>{summary}</p>
+
+    <div class:list={['flex items-center', isFeature ? 'mt-auto pt-6' : 'mt-3']}>
+      <span class="inline-flex items-center gap-2 text-base font-medium text-ink">Learn more <span aria-hidden="true">›</span></span>
+    </div>
   </div>
-  <svg class="size-[22px] shrink-0 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-    <path d="M5 12h14M13 6l6 6-6 6"></path>
-  </svg>
 </a>

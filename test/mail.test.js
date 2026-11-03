@@ -26,6 +26,32 @@ test('notification and auto-reply templates escape untrusted fields', async () =
   assert.equal(autoReply.to, 'ada@example.com');
 });
 
+test('chat lead notification includes page, Lagos time and escaped last-message transcript', async () => {
+  const data = {
+    name: '<Visitor>', email: 'visitor@example.com', phone: '', form_name: 'chat-lead', consent: 'on', _gotcha: '',
+    started_at: String(Date.now() - 4000), started_proof: 'a'.repeat(64), 'cf-turnstile-response': 'token',
+    message: '<script>alert(1)</script>', page_url: 'https://daybytes.com/services/it-support/',
+    submitted_at: '26 Oct 2026 at 10:00:00 WAT', transcript: 'Visitor: &lt;script&gt;bad&lt;/script&gt;\nAssistant: Help is available.',
+  };
+  const { notification, autoReply } = await buildMessages('chat-lead', data, null, {});
+  assert.match(notification.html, /https:\/\/daybytes\.com\/services\/it-support\//);
+  assert.match(notification.html, /26 Oct 2026 at 10:00:00 WAT/);
+  assert.match(notification.html, /&amp;lt;script&amp;gt;bad&amp;lt;\/script&amp;gt;/);
+  assert.doesNotMatch(notification.html, /<script>alert/);
+  assert.equal(autoReply.to, 'visitor@example.com');
+});
+
+test('phone-only chat lead sends the notification but no auto-reply', async () => {
+  const requests = [];
+  const fetchImpl = async (_url, options) => { requests.push(JSON.parse(options.body)); return response(); };
+  await sendSubmission({ formType: 'chat-lead', data: {
+    name: 'Phone visitor', email: '', phone: '+2349133203892', message: 'Please call me', page_url: 'https://daybytes.com/contact/',
+    submitted_at: '26 Oct 2026 at 10:00 WAT', transcript: '', consent: 'on', form_name: 'chat-lead',
+  }, env: { MAIL_PROVIDER: 'brevo', BREVO_API_KEY: 'test-key' }, fetchImpl });
+  assert.equal(requests.length, 1);
+  assert.match(requests[0].htmlContent, /Phone visitor/);
+});
+
 test('notification and auto-reply use the canonical public email logo asset', async () => {
   const { notification, autoReply } = await buildMessages('contact', formData, null, {});
   const expectedLogo = `${SITE_URL}/brand/email-logo.png`;

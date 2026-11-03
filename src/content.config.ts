@@ -45,6 +45,20 @@ const team = defineCollection({
     }),
 });
 
+const graduates = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/graduates' }),
+  schema: z.object({
+    slug: z.string().min(10),
+    name: z.string(),
+    programme: z.string(),
+    completedDate: z.coerce.date(),
+    certificateNumber: z.string(),
+    portfolioUrl: z.url().optional(),
+    githubUrl: z.url().optional(),
+    published: z.boolean(),
+  }),
+});
+
 const blog = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
   schema: ({ image }) =>
@@ -148,4 +162,4 @@ const jobs = defineCollection({
   }),
 });
 
-export const collections = { services, testimonials, faqs, team, blog, problems, projects, programs, jobs };
+export const collections = { services, testimonials, faqs, team, graduates, blog, problems, projects, programs, jobs };

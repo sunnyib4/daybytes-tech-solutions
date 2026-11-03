@@ -1,0 +1,85 @@
+---
+import { site } from '@/data/site';
+import { CHAT_WHATSAPP_TEXT } from '@/lib/chat-contact.js';
+import { externalLinkAttributes } from '@/lib/external-links.js';
+
+const whatsappHref = `${site.whatsapp}?text=${encodeURIComponent(CHAT_WHATSAPP_TEXT)}`;
+---
+
+<div data-chat-root class="fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+1rem)] z-50 sm:right-6">
+  <button type="button" data-chat-trigger aria-haspopup="dialog" aria-controls="daybytes-chat-panel" aria-expanded="false" aria-label="Chat with us" class="inline-flex min-h-12 items-center gap-2 rounded-full border border-[#d9550e] bg-accent px-5 py-3 font-medium text-on-accent shadow-[0_10px_28px_rgba(26,23,20,.24)] transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(26,23,20,.3)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent" hidden>
+    <span class="inline-flex size-7 items-center justify-center rounded-full bg-black/10" aria-hidden="true"><svg class="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.2-3.2A7.5 7.5 0 1 1 20 11.5Z" stroke-linejoin="round"></path><path d="M8.5 11h7M8.5 14h4" stroke-linecap="round"></path></svg></span>
+    Chat with us
+  </button>
+
+  <section id="daybytes-chat-panel" data-chat-panel role="dialog" aria-modal="false" aria-labelledby="daybytes-chat-title" aria-describedby="daybytes-chat-notice" hidden class="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] z-50 mx-auto flex max-h-[min(680px,calc(100dvh-7rem))] w-auto max-w-[410px] flex-col overflow-hidden rounded-[14px] border border-line bg-surface text-ink shadow-[0_20px_64px_rgba(26,23,20,.24)] sm:inset-x-auto sm:right-6 sm:bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] sm:w-[410px]">
+    <header class="flex items-center justify-between gap-3 border-b border-line px-4 py-3.5">
+      <div class="min-w-0"><h2 id="daybytes-chat-title" class="m-0 text-base font-semibold">Daybytes assistant</h2><p class="m-0 text-xs text-muted">Usually helpful. Always honest.</p></div>
+      <div class="flex shrink-0 items-center gap-2">
+        <button type="button" data-chat-reset aria-label="Start a new chat" class="inline-flex min-h-9 items-center rounded-full border border-line-strong bg-canvas px-2.5 text-xs font-medium text-body transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-accent">New chat</button>
+        <a href={whatsappHref} {...externalLinkAttributes(whatsappHref, site.url)} aria-label="Talk to a person on WhatsApp (opens in a new tab)" class="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line-strong px-2.5 text-xs font-medium text-body no-underline transition-colors hover:bg-canvas hover:text-accent-text"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.2-3.2A7.5 7.5 0 1 1 20 11.5Z" stroke-linejoin="round"></path><path d="M9 9.5c.4 2.4 2.1 4.1 4.6 5" stroke-linecap="round"></path></svg><span>WhatsApp</span></a>
+        <button type="button" data-chat-close aria-label="Close chat" title="Close chat" class="inline-flex size-9 items-center justify-center rounded-full border border-line text-ink transition-colors hover:bg-canvas focus-visible:outline-2 focus-visible:outline-accent"><svg class="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17" stroke-linecap="round"></path></svg></button>
+      </div>
+    </header>
+    <p id="daybytes-chat-notice" class="m-0 border-b border-line bg-canvas px-4 py-2.5 text-xs leading-relaxed text-body">You're chatting with an AI assistant. Don't share passwords or card details. <a href="/privacy" class="link">Privacy policy</a></p>
+    <div data-chat-messages aria-live="polite" aria-relevant="additions text" class="flex min-h-32 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
+      <div class="chat-intro max-w-[90%] self-start rounded-[12px] border border-line-strong bg-canvas px-3.5 py-3 text-sm leading-relaxed text-body shadow-sm">Hi, I can answer questions about Daybytes services and training.</div>
+      <div data-chat-suggestions class="flex flex-wrap gap-2">
+        <button type="button" data-chat-suggestion="What services do you offer?" class="rounded-full border border-line-strong bg-white/60 px-3 py-2 text-left text-xs text-body transition hover:bg-canvas">What services do you offer?</button>
+        <button type="button" data-chat-suggestion="What training programmes are available?" class="rounded-full border border-line-strong bg-white/60 px-3 py-2 text-left text-xs text-body transition hover:bg-canvas">What training programmes are available?</button>
+        <button type="button" data-chat-suggestion="What are your business hours?" class="rounded-full border border-line-strong bg-white/60 px-3 py-2 text-left text-xs text-body transition hover:bg-canvas">What are your business hours?</button>
+      </div>
+      <div data-chat-typing hidden class="flex w-fit max-w-[90%] items-center gap-2 self-start rounded-[12px] border border-line-strong bg-canvas px-3 py-2 text-xs text-muted shadow-sm">
+        <span class="sr-only">Daybytes assistant is typing</span>
+        <span class="chat-typing-dots" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+      </div>
+    </div>
+    <form data-chat-composer class="flex gap-2 border-t border-line p-3">
+      <label class="sr-only" for="daybytes-chat-input">Your message</label>
+      <input id="daybytes-chat-input" data-chat-input maxlength="500" autocomplete="off" class="min-w-0 flex-1 rounded-[9px] border border-line-strong bg-canvas px-3 py-2.5 text-sm text-ink outline-none focus-visible:ring-2 focus-visible:ring-accent" placeholder="Ask a question" />
+      <button type="submit" data-chat-send class="btn-accent size-11 shrink-0 rounded-[9px] p-0" aria-label="Send message" title="Send message"><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m21 3-7.2 18-3.9-7.9L2 9.2 21 3Z" stroke-linejoin="round"></path><path d="M10 13 21 3" stroke-linecap="round"></path></svg></button>
+    </form>
+  </section>
+</div>
+
+<style>
+  .chat-onboarding { animation: chat-panel-enter 260ms cubic-bezier(.2,.7,.2,1) both; transform-origin: bottom right; }
+  @keyframes chat-panel-enter { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .chat-typing-dots { display: inline-flex; align-items: center; gap: 6px; }
+  .chat-typing-dots span {
+    width: 6px; height: 6px; border-radius: 999px; background: rgba(61, 52, 47, 0.7); display: inline-block;
+    animation: chat-bounce 1.2s infinite ease-in-out;
+  }
+  .chat-typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+  .chat-typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes chat-bounce {
+    0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+    40% { opacity: 1; transform: translateY(-3px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chat-onboarding { animation: none; }
+    .chat-typing-dots span { animation: none; opacity: .7; }
+  }
+</style>
+
+<script>
+  import { onPageLoad } from '@/scripts/lifecycle';
+  import { openChat } from '@/scripts/chat-client';
+
+  onPageLoad((signal) => {
+    const root = document.querySelector<HTMLElement>('[data-chat-root]');
+    const trigger = root?.querySelector<HTMLButtonElement>('[data-chat-trigger]');
+    if (!root || !trigger) return;
+    void fetch('/api/chat/config', { headers: { Accept: 'application/json' }, signal })
+      .then((response) => response.ok ? response.json() : null)
+      .then((config) => {
+        if (!config?.enabled || signal.aborted) return;
+        trigger.hidden = false;
+        trigger.setAttribute('aria-expanded', 'false');
+      })
+      .catch(() => {});
+      trigger.addEventListener('click', () => openChat(root), { signal });
+  });
+</script>

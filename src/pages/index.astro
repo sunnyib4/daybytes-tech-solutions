@@ -45,14 +45,19 @@ const faqSchema = {
   <Stats />
 
   <!-- SERVICES -->
-  <section aria-labelledby="services-title" class="px-4 pt-10 pb-24 sm:px-6">
-    <div class="mx-auto max-w-[760px]">
-      <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <SectionHeading id="services-title" class="sm:text-[40px]">What we do</SectionHeading>
-        <a href="/contact" class="link font-mono text-sm">Request a service <span class="arrow" aria-hidden="true">→</span></a>
+  <section aria-labelledby="services-title" class="px-4 pt-14 pb-24 sm:px-6">
+    <div class="mx-auto max-w-[1200px]">
+      <div class="mb-8 flex flex-wrap items-end justify-between gap-5">
+        <div class="max-w-[720px]">
+          <SectionHeading id="services-title" class="sm:text-[64px]">What we do</SectionHeading>
+          <p class="mt-3 mb-0 max-w-[680px] text-base leading-relaxed text-body sm:text-[20px]">
+            Practical technology support and growth solutions designed to help your business run smoother, scale faster, and stay future-ready.
+          </p>
+        </div>
+        <a href="/contact" class="inline-flex items-center justify-center rounded-full bg-[#8fe7c0] px-7 py-3.5 text-base font-medium text-[#1a1714] shadow-[0_12px_28px_rgba(80,166,122,0.18)] transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_30px_rgba(80,166,122,0.22)]">Get Started</a>
       </div>
-      <ul data-reveal-stagger class="m-0 flex list-none flex-col gap-3 p-0">
-        {services.map((s) => <li><ServiceCard service={s} /></li>)}
+      <ul data-reveal-stagger class="m-0 grid list-none grid-cols-1 gap-5 p-0 md:grid-cols-2 xl:grid-cols-3">
+        {services.map((s) => <li class="h-full"><ServiceCard service={s} variant="feature" /></li>)}
       </ul>
     </div>
   </section>

@@ -47,6 +47,17 @@ export const formSchemas = {
   }).superRefine((data, ctx) => {
     if (!data.cv_link && !data.cv) ctx.addIssue({ code: 'custom', path: ['cv'], message: 'Upload a CV or provide a CV link' });
   }),
+  'chat-lead': z.object({
+    ...common,
+    'cf-turnstile-response': z.string().max(4096).optional().default(''),
+    email: z.union([z.literal(''), email]).optional().default(''),
+    phone: optionalText(60),
+    message: text(1000).min(1),
+    page_url: z.string().url().max(2048),
+    transcript: text(6000).optional().default(''),
+  }).superRefine((data, ctx) => {
+    if (!data.email && !data.phone) ctx.addIssue({ code: 'custom', path: ['email'], message: 'Enter an email address or phone number' });
+  }),
 };
 
 export const escapeHtml = (value) => String(value)

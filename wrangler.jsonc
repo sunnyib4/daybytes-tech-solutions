@@ -11,13 +11,20 @@
     "BREVO_SENDER_EMAIL": "support@daybytes.com",
     "BREVO_CONTACT_TO": "info@daybytes.com",
     "BREVO_TRAINING_TO": "info@daybytes.com",
-    "BREVO_CAREERS_TO": "info@daybytes.com"
+    "BREVO_CAREERS_TO": "info@daybytes.com",
+    "CHAT_ENABLED": "false",
+    "AI_ENABLED": "false",
+    "GROQ_MODEL": "openai/gpt-oss-20b",
+    "GROQ_FALLBACK_MODEL": "openai/gpt-oss-120b",
+    "TELEGRAM_CHAT_ID": ""
   },
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
     "run_worker_first": [
       "/api/*",
+      "/verify",
+      "/verify/*",
       "/robots.txt",
       "/2026/*",
       "/about-us*",

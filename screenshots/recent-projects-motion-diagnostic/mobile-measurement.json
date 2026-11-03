@@ -1,0 +1,33 @@
+{
+  "viewport": {
+    "width": 375,
+    "height": 812
+  },
+  "reducedMotion": "no-preference",
+  "cards": [
+    {
+      "index": 1,
+      "top": -500.28,
+      "transform": "none",
+      "opacity": "1"
+    },
+    {
+      "index": 2,
+      "top": 171.61,
+      "transform": "none",
+      "opacity": "1"
+    },
+    {
+      "index": 3,
+      "top": 837.03,
+      "transform": "none",
+      "opacity": "1"
+    },
+    {
+      "index": 4,
+      "top": 1533.25,
+      "transform": "none",
+      "opacity": "1"
+    }
+  ]
+}

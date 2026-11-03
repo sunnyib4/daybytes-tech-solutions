@@ -1,0 +1,125 @@
+---
+export const prerender = true;
+
+import type { GetStaticPaths } from 'astro';
+import '@/styles/global.css';
+import { getCollection } from 'astro:content';
+import { site } from '@/data/site';
+import { formatDate } from '@/lib/content';
+
+export const getStaticPaths = (async () => {
+  const graduates = await getCollection('graduates', ({ data }) => data.published);
+  return graduates.map((graduate) => ({
+    params: { slug: graduate.data.slug },
+    props: { graduate },
+  }));
+}) satisfies GetStaticPaths;
+
+const { graduate } = Astro.props;
+const { name, programme, completedDate, certificateNumber, portfolioUrl, githubUrl } = graduate.data;
+const emailHref = `mailto:${site.email}?subject=${encodeURIComponent(certificateNumber)}`;
+const whatsappHref = `${site.whatsapp}?text=${encodeURIComponent(`Certificate verification: ${certificateNumber}`)}`;
+---
+<!doctype html>
+<html lang="en-NG">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="theme-color" content="#F4F3F1" />
+    <title>Certificate Verification | {site.shortName}</title>
+    <script is:inline>
+      (() => {
+        const apply = (doc) => {
+          let theme;
+          try {
+            theme = localStorage.getItem('theme');
+          } catch {}
+          if (theme !== 'light' && theme !== 'dark') {
+            theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          doc.documentElement.dataset.theme = theme;
+        };
+        const syncThemeButton = () => {
+          const button = document.querySelector('[data-verification-theme-toggle]');
+          if (!button) return;
+          const isDark = document.documentElement.dataset.theme === 'dark';
+          button.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+          button.setAttribute('aria-pressed', String(isDark));
+        };
+        apply(document);
+        document.addEventListener('DOMContentLoaded', syncThemeButton, { once: true });
+        document.addEventListener('click', (event) => {
+          const button = event.target.closest('[data-verification-theme-toggle]');
+          if (!button) return;
+          const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+          document.documentElement.dataset.theme = theme;
+          syncThemeButton();
+          try {
+            localStorage.setItem('theme', theme);
+          } catch {}
+        });
+      })();
+    </script>
+  </head>
+  <body class="min-h-dvh overflow-x-hidden bg-canvas font-sans text-ink antialiased">
+    <main class="mx-auto flex min-h-dvh w-full max-w-[760px] items-center px-4 py-10 sm:px-6">
+      <section aria-labelledby="verification-title" class="w-full overflow-hidden rounded-[14px] border border-line bg-surface shadow-[0_20px_60px_rgba(26,23,20,.08)]">
+        <div class="h-2 bg-accent"></div>
+        <div class="p-6 sm:p-10">
+          <div class="mb-8 flex items-center justify-between gap-3">
+            <div class="flex min-w-0 items-center gap-3">
+              <img src="/brand/daybytes-mark.svg" alt="" width="40" height="40" class="dark:hidden" />
+              <img src="/brand/daybytes-mark-white.svg" alt="" width="40" height="40" class="hidden dark:block" />
+              <span class="font-medium text-ink">Daybytes Tech Solutions</span>
+            </div>
+            <button
+              type="button"
+              data-verification-theme-toggle
+              aria-label="Switch to dark mode"
+              aria-pressed="false"
+              class="inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-ink transition-colors hover:bg-black/5 dark:hover:bg-white/10"
+            >
+              <svg class="size-5 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" stroke-linejoin="round"></path>
+              </svg>
+              <svg class="hidden size-5 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke-linecap="round"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="mb-7 inline-flex items-center gap-2 rounded-full border border-line bg-canvas px-3 py-2 text-sm font-medium text-accent-text">
+            <span aria-hidden="true" class="size-2 rounded-full bg-accent"></span>
+            Certificate verified
+          </div>
+          <h1 id="verification-title" class="heading-serif m-0 text-3xl text-ink sm:text-4xl">{name}</h1>
+          <p class="mt-3 mb-0 text-lg leading-relaxed text-body">{programme}</p>
+          <dl class="mt-8 grid gap-5 border-y border-line py-6 sm:grid-cols-2">
+            <div>
+              <dt class="label-mono mb-1 text-subtle">Completed</dt>
+              <dd class="m-0 font-medium text-ink"><time datetime={completedDate.toISOString()}>{formatDate(completedDate)}</time></dd>
+            </div>
+            <div>
+              <dt class="label-mono mb-1 text-subtle">Certificate number</dt>
+              <dd class="m-0 break-all font-mono text-sm font-medium text-ink">{certificateNumber}</dd>
+            </div>
+          </dl>
+          <p class="mt-6 mb-0 text-sm text-muted">Issued by Daybytes Tech Solutions, Lagos, Nigeria</p>
+          {(portfolioUrl || githubUrl) && (
+            <div class="mt-8 flex flex-wrap gap-3">
+              {portfolioUrl && <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" class="btn-accent px-5 py-3">View portfolio</a>}
+              {githubUrl && <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="btn-dark px-5 py-3">GitHub profile</a>}
+            </div>
+          )}
+          <div class="mt-8 grid gap-3 border-t border-line pt-6 text-sm sm:grid-cols-3">
+            <a class="link break-all" href={emailHref}>Email Daybytes</a>
+            <a class="link" href={site.phone.href}>{site.phone.display}</a>
+            <a class="link" href={whatsappHref} target="_blank" rel="noopener noreferrer">WhatsApp Daybytes</a>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

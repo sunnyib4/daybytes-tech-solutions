@@ -81,6 +81,7 @@ export default defineConfig({
         return (
           !draftProjects.some((draft) => path.endsWith(draft)) &&
           !draftStaticPaths.includes(path) &&
+          !/^\/verify(?:\/|$)/.test(path) &&
           !/^\/(?:404|api|admin|preview|test-brevo)(?:\/|$)/.test(path)
         );
       },

@@ -33,6 +33,15 @@ export const formConfig = {
     autoReplyCtaLabel: 'Visit Daybytes',
     autoReplyCtaUrl: SITE_URL,
   },
+  'chat-lead': {
+    subject: 'New website chat lead: daybytes.com',
+    label: 'Chat lead',
+    recipient: 'BREVO_CONTACT_TO',
+    autoReplySubject: 'Thanks for contacting Daybytes',
+    autoReplyIntro: 'Thanks for reaching out through our website chat. We have received your enquiry.',
+    autoReplyCtaLabel: 'Visit Daybytes',
+    autoReplyCtaUrl: SITE_URL,
+  },
 };
 
 function rowsFor(formType, data) {
@@ -46,7 +55,8 @@ function rowsFor(formType, data) {
     ['Service', data.service], ['Program', data.program], ['Role', data.role],
     ['Applying as', data.as], ['Preferred format', data.format], ['Experience', data.experience],
     ['CV link', data.cv_link], ['Portfolio', data.portfolio], ['Cover note', data.cover_note],
-    ['Message', data.message], ['Notes', data.note],
+    ['Message', data.message], ['Page URL', data.page_url], ['Time (Africa/Lagos)', data.submitted_at],
+    ['Chat transcript (last messages)', data.transcript], ['Notes', data.note],
   ];
   return [...rows, ...extra].filter(([, value]) => value);
 }
@@ -197,10 +207,10 @@ export async function sendSubmission({ formType, data, cv, env, fetchImpl = fetc
   const { notification, autoReply } = await buildMessages(formType, data, cv, env);
   if (provider === 'console') {
     logger.log(JSON.stringify({ event: 'form_notification', ...notification }));
-    logger.log(JSON.stringify({ event: 'form_auto_reply', ...autoReply }));
+    if (data.email) logger.log(JSON.stringify({ event: 'form_auto_reply', ...autoReply }));
     return;
   }
   await deliver(notification, provider, env, fetchImpl, 'form.notification');
   if (provider === 'formspree') return;
-  await deliver(autoReply, provider, env, fetchImpl, 'form.auto_reply');
+  if (data.email) await deliver(autoReply, provider, env, fetchImpl, 'form.auto_reply');
 }

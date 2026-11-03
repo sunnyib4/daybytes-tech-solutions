@@ -53,15 +53,15 @@ const describe = (p: (typeof problems)[number]['data']) =>
     }
   </div>
 
-  <div data-controls hidden class="flex items-center gap-1 self-start rounded-full bg-surface py-1 pr-1 pl-2 shadow-[0_10px_24px_rgba(0,0,0,.14)]">
+  <div data-controls hidden class="flex max-w-full flex-wrap items-center gap-1 self-start rounded-full bg-surface py-1 pr-1 pl-2 shadow-[0_10px_24px_rgba(0,0,0,.14)]">
     {
       problems.map((p, i) => (
-        <button type="button" data-dot={i} aria-label={`Show problem ${i + 1} of ${problems.length}: ${p.data.request}`} aria-current={i === 0 ? 'true' : undefined} class="group flex size-6 cursor-pointer items-center justify-center rounded-full">
+        <button type="button" data-dot={i} aria-label={`Show problem ${i + 1} of ${problems.length}: ${p.data.request}`} aria-current={i === 0 ? 'true' : undefined} class="group flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full">
           <span class="block h-2 w-2 rounded-full bg-ink/50 transition-[width,background-color] duration-300 group-hover:bg-ink/75 group-aria-[current=true]:w-5 group-aria-[current=true]:bg-accent" />
         </button>
       ))
     }
-    <button type="button" data-toggle aria-label="Pause rotating problems" class="ml-1 flex size-8 cursor-pointer items-center justify-center rounded-full text-ink hover:bg-ink/5">
+    <button type="button" data-toggle aria-label="Pause rotating problems" class="ml-1 flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-ink hover:bg-ink/5">
       <svg data-icon-pause viewBox="0 0 16 16" class="size-3.5" fill="currentColor" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1" /><rect x="9.5" y="2" width="3.5" height="12" rx="1" /></svg>
       <svg data-icon-play viewBox="0 0 16 16" class="hidden size-3.5" fill="currentColor" aria-hidden="true"><path d="M4 2.5v11a1 1 0 0 0 1.5.86l9-5.5a1 1 0 0 0 0-1.72l-9-5.5A1 1 0 0 0 4 2.5Z" /></svg>
     </button>
