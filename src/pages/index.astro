@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { Image } from 'astro:assets';
 import LocalBusinessSchema from '@/components/LocalBusinessSchema.astro';
 import Hero from '@/components/home/Hero.astro';
-import ServiceCard from '@/components/ui/ServiceCard.astro';
+import HomeServiceCard from '@/components/home/HomeServiceCard.astro';
 import PostCard from '@/components/ui/PostCard.astro';
 import FaqList from '@/components/ui/FaqList.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
@@ -45,25 +45,25 @@ const faqSchema = {
   <Stats />
 
   <!-- SERVICES -->
-  <section aria-labelledby="services-title" class="bg-[#dfe6f1] px-4 py-14 sm:px-6">
-    <div class="mx-auto max-w-[1240px] rounded-[18px] border border-[#b8c0ca] bg-[#f3f3f3] p-5 sm:p-8 lg:p-10">
-      <div class="mb-8 flex justify-center">
-        <span class="inline-flex items-center gap-2 rounded-full border border-[#7d5ae6] bg-[#f6f3ff] px-4 py-2 text-sm font-medium text-[#5d43d0] shadow-[0_0_0_1px_rgba(125,90,230,0.1)]">
-          <span aria-hidden="true" class="text-base">✦</span>
-          Our Services
-        </span>
+  <section aria-labelledby="services-title" class="px-4 py-20 sm:px-6">
+    <div class="mx-auto max-w-[1100px]">
+      <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="label-mono m-0 mb-3 flex items-center gap-2 text-accent-text">
+            <span aria-hidden="true" class="size-1.5 rounded-full bg-accent"></span>
+            Our services
+          </p>
+          <SectionHeading id="services-title">Our Palette of Expertise</SectionHeading>
+        </div>
+        <a href="/services" class="link inline-flex min-h-11 items-center font-mono text-sm">
+          View all services <span class="arrow" aria-hidden="true">→</span>
+        </a>
       </div>
 
-      <SectionHeading id="services-title" class="text-center sm:text-[64px]">Our Palette of Expertise</SectionHeading>
-
-      <ul data-reveal-stagger class="m-0 mt-10 grid list-none grid-cols-1 gap-5 p-0 md:grid-cols-2 xl:grid-cols-3">
-        {services.map((s, index) => (
-          <li class="h-full">
-            <ServiceCard
-              service={s}
-              variant="feature"
-              class={index === 0 ? 'border-[#6d47dc] bg-[#6d47dc] text-white shadow-[0_22px_40px_rgba(109,71,220,0.22)] hover:border-[#5c38c8] hover:shadow-[0_22px_40px_rgba(109,71,220,0.28)] [&_h3]:text-white [&_p]:text-white [&_span]:text-white [&_.icon-wrap]:bg-[#18181a]' : ''}
-            />
+      <ul data-reveal-stagger class="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+        {services.map((service) => (
+          <li class="grid grid-rows-subgrid row-span-4">
+            <HomeServiceCard service={service} />
           </li>
         ))}
       </ul>

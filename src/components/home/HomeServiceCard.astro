@@ -1,0 +1,39 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  service: CollectionEntry<'services'>;
+}
+
+const { service } = Astro.props;
+const { title, cardTitle, summary } = service.data;
+const displayTitle = cardTitle ?? title;
+---
+
+<a
+  href={`/services/${service.id}`}
+  aria-label={displayTitle}
+  class="group grid [grid-row:1/-1] grid-rows-subgrid rounded-[14px] border border-line bg-surface p-6 text-ink no-underline transition-colors duration-150 hover:bg-ink hover:text-surface focus-visible:bg-ink focus-visible:text-surface sm:p-7"
+>
+  <div class="flex items-center justify-between gap-4">
+    <span class="font-mono text-sm text-subtle transition-colors duration-150 group-hover:text-accent group-focus-visible:text-accent dark:group-hover:text-[#ad430b] dark:group-focus-visible:text-[#ad430b]">
+      {String(service.data.order).padStart(2, '0')}
+    </span>
+    <svg class="size-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      {service.id === 'it-support' && <><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z" /><path d="m9 12 2 2 4-4" /></>}
+      {service.id === 'web-development' && <><path d="m8 8-4 4 4 4" /><path d="m16 8 4 4-4 4" /><path d="m14 4-4 16" /></>}
+      {service.id === 'virtual-assistant-services' && <><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /><path d="m9 15 2 2 4-4" /></>}
+      {service.id === 'computer-sales-and-repair' && <><rect x="3" y="4" width="18" height="13" rx="2" /><path d="M2 21h20M8 17l-1 4m9-4 1 4" /></>}
+      {service.id === 'smart-learning-solutions' && <><path d="m2 10 10-5 10 5-10 5-10-5Z" /><path d="M6 12v5c3.5 3 8.5 3 12 0v-5M22 10v6" /></>}
+      {service.id === 'business-strategy-and-operational-optimization' && <><path d="M3 3v18h18" /><path d="m7 14 4-4 4 3 6-7" /><path d="M17 6h4v4" /></>}
+    </svg>
+  </div>
+
+  <h3 class="heading-serif m-0 text-xl leading-snug">{displayTitle}</h3>
+  <p class="m-0 text-[15px] leading-relaxed text-muted transition-colors duration-150 group-hover:text-surface group-focus-visible:text-surface">{summary}</p>
+
+  <div class="flex items-center justify-between border-t border-line pt-4 transition-colors duration-150 group-hover:border-surface/30 group-focus-visible:border-surface/30">
+    <span class="text-sm font-medium">Learn more</span>
+    <span aria-hidden="true" class="arrow inline-block transition-transform duration-150 group-hover:translate-x-1 group-focus-visible:translate-x-1">→</span>
+  </div>
+</a>
